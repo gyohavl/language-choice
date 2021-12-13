@@ -1,0 +1,10 @@
+:root {
+    --primary-color: #790e1c;
+}
+
+body {
+    font-family: Montserrat, sans-serif;
+    font-size: 18px;
+    line-height: 1.5;
+    /* Montserrat je potřeba nastavit */
+}
