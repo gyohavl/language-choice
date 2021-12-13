@@ -1,5 +1,5 @@
 <?php
-$config = include("../config.php");
+$config = include("config.php");
 
 function sql($sql, $fetch = true, $params = array()) {
     global $config;
