@@ -1,5 +1,7 @@
 <?php
-$config = include(__DIR__ . '/../config.php');
+if (file_exists(__DIR__ . '/../config.php')) {
+    $config = include(__DIR__ . '/../config.php');
+}
 
 function sql($sql, $fetch = true, $params = array()) {
     global $config;
