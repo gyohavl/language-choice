@@ -1,3 +1,7 @@
 <?php
 include('../src/main.php');
-showConfigForm();
+if (!configExists()) {
+    echo showConfigForm();
+} else if (!dbReady()) {
+    echo showDbSetup();
+}

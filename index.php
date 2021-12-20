@@ -1,6 +1,6 @@
 <?php
 include('src/main.php');
+
 if (configExists()) {
-    echo 'nice';
+    echo file_get_contents('templates/client.html');
 }
-// echo file_get_contents('assets/template.html');

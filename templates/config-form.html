@@ -1,1 +1,36 @@
-hello
+<h1>Nastavení základních údajů</h1>
+<p><em>{error}</em></p>
+<form method="post">
+    <table>
+        <tr>
+            <th scope="row"><label for="dbname">Název databáze</label></th>
+            <td><input name="dbname" id="dbname" type="text" value="{dbname}" required></td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="dbuser">Uživatelské jméno</label></th>
+            <td><input name="dbuser" id="dbuser" type="text" value="{dbuser}" required></td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="dbpass">Heslo</label></th>
+            <td><input name="dbpass" id="dbpass" type="text" value="{dbpass}"></td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="dbhost">Databázový server</label></th>
+            <td><input name="dbhost" id="dbhost" type="text" value="{dbhost}" required></td>
+        </tr>
+        <!-- <tr>
+            <th scope="row"><label for="prefix">Předpona tabulek</label></th>
+            <td><input name="prefix" id="prefix" type="text" value="lang_"></td>
+        </tr> -->
+        <tr>
+            <td colspan="2">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="adminpass">Admin. heslo</label></th>
+            <td><input name="adminpass" id="adminpass" type="text" value="{adminpass}" required></td>
+        </tr>
+        <tr><td></td><td><input type="submit" value="Odeslat"></td></tr>
+    </table>
+</form>
