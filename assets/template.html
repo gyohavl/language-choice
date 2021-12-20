@@ -11,15 +11,16 @@
 <body>
     <h1>Volba druhého cizího jazyka</h1>
     <h2>Přihlášený student</h2>
-    jméno, příjmení,<br>
-    spisové číslo,<br>
-    5./9. třída,<br>
-    e-mail
+    <ul>
+        <li><strong>{name}</strong></li>
+        <li>spisové číslo: {number}</li>
+        <li>{level}</li>
+        <!-- osmileté studium (nastupuje z 5. třídy) / čtyřleté studium (nastupuje z 9. třídy) -->
+        <li>e-mail: {email}</li>
+    </ul>
+
     <h2>Volba jazyka</h2>
-    fr, 5 volných míst, [vybrat]<br>
-    nj, 4 volná místa, [vybrat]<br>
-    šp, 1 volné místo [vybrat]<br>
-    
+    {languages}
 </body>
 
 </html>
