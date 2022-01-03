@@ -39,11 +39,11 @@ return array(
 }
 
 function dbReady() {
-    var_dump(sql("SELECT table_name FROM information_schema.TABLES WHERE TABLE_TYPE = 'BASE TABLE'"));
+    // var_dump(sql("SELECT table_name FROM information_schema.TABLES WHERE TABLE_TYPE = 'BASE TABLE'"));
 }
 
 function showDbSetup() {
     if (!dbReady()) {
-
+        
     }
 }

@@ -2,9 +2,10 @@
 date_default_timezone_set('Europe/Prague');
 include(__DIR__ . '/db.php');
 include(__DIR__ . '/setup.php');
+include(__DIR__ . '/auth.php');
 
-function _i($a, $b) {
-    return isset($a) ? $a : $b;
+if (file_exists(__DIR__ . '/../config.php')) {
+    $config = include(__DIR__ . '/../config.php');
 }
 
 function adminTemplate($content) {

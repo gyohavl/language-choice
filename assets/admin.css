@@ -6,7 +6,7 @@ th label {
     padding-right: 1rem;
 }
 
-input[type=submit] {
+table input[type=submit] {
     width: 100%;
     margin-top: 0.5rem;
 }
