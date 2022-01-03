@@ -39,11 +39,25 @@ return array(
 }
 
 function dbReady() {
-    // var_dump(sql("SELECT table_name FROM information_schema.TABLES WHERE TABLE_TYPE = 'BASE TABLE'"));
+    $should_exist = array(
+        prefixTable('students'),
+        prefixTable('languages'),
+        prefixTable('data')
+    );
+    $st_result = sql("show tables");
+    $existing_tables = array();
+
+    foreach ($st_result as $value) {
+        $existing_tables[] = $value[0];
+    }
+
+    // checks if all necessary tables exist
+    $containsAllValues = !array_diff($should_exist, $existing_tables);
+    return $containsAllValues;
 }
 
 function showDbSetup() {
     if (!dbReady()) {
-        
+        echo 'setup';
     }
 }

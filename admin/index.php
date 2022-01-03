@@ -4,6 +4,8 @@ if (!configExists()) {
     echo showConfigForm();
 } else if (!adminLoggedIn()) {
     echo showLoginForm();
-} else {
+} else if (!dbReady()) {
     echo showDbSetup();
+} else {
+    echo 'admin successful';
 }

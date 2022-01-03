@@ -8,3 +8,7 @@ function sql($sql, $fetch = true, $params = array()) {
     $query->execute($params);
     return $fetch ? $query->fetchAll() : true;
 }
+
+function prefixTable($name) {
+    return 'lc_' . $name;
+}
