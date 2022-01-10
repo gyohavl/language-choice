@@ -1,6 +1,6 @@
 <?php
 function configExists() {
-    return file_exists(__DIR__ . '/../config.php');
+    return file_exists(__DIR__ . '/../../config.php');
 }
 
 function showConfigForm() {
@@ -18,7 +18,7 @@ function showConfigForm() {
 
         if ($filledIn > 0) {
             if ($required == 5) {
-                file_put_contents(__DIR__ . '/../config.php', "<?php
+                file_put_contents(__DIR__ . '/../../config.php', "<?php
 return array(
     'dbhost' => '{$_POST['dbhost']}',
     'dbuser' => '{$_POST['dbuser']}',
@@ -44,7 +44,7 @@ function dbReady() {
         prefixTable('languages'),
         prefixTable('data')
     );
-    $st_result = sql("show tables");
+    $st_result = sql('show tables');
     $existing_tables = array();
 
     foreach ($st_result as $value) {
@@ -58,6 +58,10 @@ function dbReady() {
 
 function showDbSetup() {
     if (!dbReady()) {
-        echo 'setup';
+        if (isset($_POST['dbcreate'])) {
+            echo 'now, create db tables';
+        } else {
+            return 'form';
+        }
     }
 }
