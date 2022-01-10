@@ -59,9 +59,22 @@ function dbReady() {
 function showDbSetup() {
     if (!dbReady()) {
         if (isset($_POST['dbcreate'])) {
-            echo 'now, create db tables';
+            sql("DROP TABLE IF EXISTS `" . prefixTable('students') . "`;
+            CREATE TABLE `" . prefixTable('students') . "` (
+                `id` mediumint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `number` mediumint NOT NULL,
+                `key` tinytext NOT NULL,
+                `email` tinytext NOT NULL,
+                `name` tinytext NOT NULL,
+                `class` tinyint NOT NULL,
+                `choice` tinyint NULL
+              );", false);
         } else {
-            return 'form';
+            return adminTemplate(
+                '<form method="post">Nyní dojde k vytvoření tabulek v databázi (jejich názvy jsou vypsány níže).<br>'
+                    . 'Existující tabulky se stejným názvem budou smazány. <input type="submit" name="dbcreate" value="Souhlasím"></form>'
+                    . '<code>' . prefixTable('students') . '<br>' . prefixTable('languages') . '<br>' . prefixTable('data') . '</code>'
+            );
         }
     }
 }
