@@ -59,6 +59,7 @@ function dbReady() {
 function showDbSetup() {
     if (!dbReady()) {
         if (isset($_POST['dbcreate'])) {
+            // students
             sql("DROP TABLE IF EXISTS `" . prefixTable('students') . "`;
             CREATE TABLE `" . prefixTable('students') . "` (
                 `id` mediumint NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -68,7 +69,7 @@ function showDbSetup() {
                 `name` tinytext NOT NULL,
                 `class` tinyint NOT NULL,
                 `choice` tinyint NULL
-              );", false);
+              ) " . getSqlLanguageSettings() . ";", false);
         } else {
             return adminTemplate(
                 '<form method="post">Nyní dojde k vytvoření tabulek v databázi (jejich názvy jsou vypsány níže).<br>'
