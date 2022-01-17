@@ -3,6 +3,7 @@ date_default_timezone_set('Europe/Prague');
 include(__DIR__ . '/components/db.php');
 include(__DIR__ . '/components/setup.php');
 include(__DIR__ . '/components/auth.php');
+include(__DIR__ . '/components/dashboard.php');
 
 if (configExists()) {
     $config = include(__DIR__ . '/../config.php');

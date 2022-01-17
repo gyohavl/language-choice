@@ -8,5 +8,11 @@ if (!configExists()) {
 } else if (!dbReady()) {
     echo showDbSetup();
 } else {
-    echo 'admin successful';
+    if (!empty($_GET['edit'])) {
+        echo showEditForm($_GET['edit']);
+    } else if (!empty($_POST['edit'])) {
+        echo editData($_POST['edit']);
+    } else {
+        echo showDashboard();
+    }
 }

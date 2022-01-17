@@ -65,11 +65,31 @@ function showDbSetup() {
                 `id` mediumint NOT NULL AUTO_INCREMENT PRIMARY KEY,
                 `number` mediumint NOT NULL,
                 `key` tinytext NOT NULL,
-                `email` tinytext NOT NULL,
-                `name` tinytext NOT NULL,
+                `email` text NOT NULL,
+                `name` text NOT NULL,
                 `class` tinyint NOT NULL,
                 `choice` tinyint NULL
-              ) " . getSqlLanguageSettings() . ";", false);
+            ) " . getSqlLanguageSettings() . ";", false);
+
+            // languages
+            sql("DROP TABLE IF EXISTS `" . prefixTable('languages') . "`;
+            CREATE TABLE `" . prefixTable('languages') . "` (
+                `id` mediumint NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `name` tinytext NOT NULL,
+                `class` tinyint NOT NULL,
+                `limit` tinyint NOT NULL,
+                `export` tinytext NOT NULL
+            ) " . getSqlLanguageSettings() . ";", false);
+
+            // data
+            sql("DROP TABLE IF EXISTS `" . prefixTable('data') . "`;
+            CREATE TABLE `" . prefixTable('data') . "` (
+                `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                `name` tinytext NOT NULL,
+                `value` text NULL
+            ) " . getSqlLanguageSettings() . ";", false);
+
+            return adminTemplate('Tabulky byly vytvořeny. <a href=".">Pokračovat do administrace…</a>');
         } else {
             return adminTemplate(
                 '<form method="post">Nyní dojde k vytvoření tabulek v databázi (jejich názvy jsou vypsány níže).<br>'
