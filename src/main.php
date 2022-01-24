@@ -22,3 +22,7 @@ function fillTemplate($name, $data) {
 
     return $html;
 }
+
+function getClasses() {
+    return array(5, 9);
+}

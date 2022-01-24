@@ -63,7 +63,7 @@ function showDbSetup() {
             sql("DROP TABLE IF EXISTS `" . prefixTable('students') . "`;
             CREATE TABLE `" . prefixTable('students') . "` (
                 `id` mediumint NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                `number` mediumint NOT NULL,
+                `sid` tinytext NOT NULL,
                 `key` tinytext NOT NULL,
                 `email` text NOT NULL,
                 `name` text NOT NULL,
