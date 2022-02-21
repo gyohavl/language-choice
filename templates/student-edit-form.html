@@ -1,0 +1,28 @@
+<h1>Upravení </h1>
+<p><em>{error}</em></p>
+<form method="post">
+    <input name="id" type="hidden" value="{id}">
+    <table>
+        <tr>
+            <th scope="row"><label for="sid">Spisové číslo</label></th>
+            <td><input name="sid" id="sid" type="text" value="{sid}" required></td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="email">E-mail</label></th>
+            <td><input name="email" id="email" type="text" value="{email}" required></td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="name">Celé jméno</label></th>
+            <td><input name="name" id="name" type="text" value="{name}" required></td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="class">Třída (5/9)</label></th>
+            <td><input name="class" id="class" type="text" value="{class}" required></td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Odeslat"></td>
+        </tr>
+    </table>
+</form>

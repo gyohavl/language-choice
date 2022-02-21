@@ -1,6 +1,6 @@
 <?php
 function showDashboard() {
-    $html = '<h1>Nástěnka</h1><h2>Studenti <a href="?edit=import-students">(upravit)</a></h2>';
+    $html = '<h1>Nástěnka</h1><ul><li><a href="?list=students">studenti</a></li></ul>';
     return adminTemplate($html);
     // studenti
     // jazyky
@@ -13,6 +13,29 @@ function showDashboard() {
     // vymazat všechna data z databáze
 }
 
+function showList($list) {
+    if ($list == 'students') {
+        $html = '<h1>Studenti <a href="?edit=import-students">(importovat)</a></h1>';
+        $html .= getStudentsTable();
+        return adminTemplate($html);
+    }
+}
+
+function getStudentsTable() {
+    $html = '<table><thead><tr>
+    <th>id</th><th>spisové číslo</th><th>e-mail</th><th>jméno</th><th>třída</th><th>vybraný jazyk</th><th>upravit</th><th>přihlašovací odkaz</th>
+    </tr></thead><tbody>';
+    $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
+    $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 2) . '?k=';
+
+    foreach ($studentsTable as $row) {
+        $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[3]</td><td>$row[4]</td><td>$row[5]</td><td>$row[6]</td><td><a href=\"?edit=student&id=$row[0]\">upravit</a></td><td><input type=\"text\" value=\"$linkPrefix$row[2]\" readonly></td></tr>";
+    }
+
+    $html .= '</tbody></table>';
+    return $html;
+}
+
 function showEditForm($form, $fill = null, $errorMessage = '') {
     $formBegin = '<form method="post" action=".">';
     $formEnd = '<input type="hidden" name="edit" value="' . $form . '"><input type="submit" value="Odeslat"></form>';
@@ -22,6 +45,20 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             $formName = 'Importovat seznam studentů';
             $html = '<p>Formát: <code>spisové číslo,e-mail,celé jméno,třída (5/9)</code></p>'
                 . $formBegin . '<textarea name="import-csv">' . fillInput($fill, 'import-csv') . '</textarea><br>' . $formEnd;
+            break;
+
+        case 'student':
+            if (empty($_GET['id'])) {
+                $formName = 'Chyba: chybí ID studenta';
+                $html = '<a href=".">zpět</a>';
+                break;
+            }
+
+            $studentId = $_GET['id'];
+            $formName = 'Upravit studenta ' . $studentId;
+            $studentData = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE id=?;', true, array($studentId));
+            $html = '';
+            var_dump($studentData);
             break;
 
         default:
@@ -67,20 +104,21 @@ function editData($form) {
                                 break 2;
                             }
                         } else {
-                            $errorMessage = $errorLineNumber . ' chybí sloupec';
+                            $errorMessage = $errorLineNumber . ' chybí nebo přebývá sloupec';
                             break 2;
                         }
                     }
                 }
 
                 foreach ($data as $student) {
-                    // sql(
-                    //     'INSERT INTO `' . prefixTable('students') . '` (`sid`, `key`, `email`, `name`, `class`) VALUES (?, ?, ?, ?, ?);',
-                    //     false,
-                    //     array($student[0], createUniqueKey(), $student[1], $student[2], $student[3])
-                    // );
-                    return createUniqueKey();
+                    sql(
+                        'INSERT INTO `' . prefixTable('students') . '` (`sid`, `key`, `email`, `name`, `class`) VALUES (?, ?, ?, ?, ?);',
+                        false,
+                        array($student[0], createUniqueKey(), $student[1], $student[2], $student[3])
+                    );
                 }
+
+                $errorMessage = '';
             } else {
                 $errorMessage = 'odeslali jste prázdný formulář';
             }
@@ -106,12 +144,13 @@ function createUniqueKey() {
         $existingKeys[] = $row['key'];
     }
 
-    if (in_array('askljflkjsdflkj', $existingKeys)) {
-        return 'existuje';
-    } else {
-        return generateRandomString(25);
-        return 'neexistuje';
+    $newKey = generateRandomString(25);
+
+    if (in_array($newKey, $existingKeys)) {
+        return createUniqueKey();
     }
+
+    return $newKey;
 }
 
 // https://stackoverflow.com/questions/4356289/php-random-string-generator
