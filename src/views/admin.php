@@ -5,6 +5,8 @@ if (!configExists()) {
     echo showConfigForm();
 } else if (!adminLoggedIn()) {
     echo showLoginForm();
+} else if (!dbConnectionOk()) {
+    echo showConfigForm('Připojení k databázi nefunguje.');
 } else if (!dbReady()) {
     echo showDbSetup();
 } else {

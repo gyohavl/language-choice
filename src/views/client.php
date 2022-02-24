@@ -1,6 +1,6 @@
 <?php
 include(__DIR__ . '/../main.php');
 
-if (configExists()) {
+if (configExists() && dbConnectionOk()) {
     echo file_get_contents('templates/client.html');
 }

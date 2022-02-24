@@ -3,12 +3,16 @@ function configExists() {
     return file_exists(__DIR__ . '/../../config.php');
 }
 
-function showConfigForm() {
-    if (!configExists()) {
+function dbConnectionOk() {
+    return sql(null, null, null, true);
+}
+
+function showConfigForm($message = null) {
+    if (!configExists() || !dbConnectionOk()) {
         $filledIn = !empty($_POST['dbname']) + !empty($_POST['dbuser']) + !empty($_POST['dbpass']) + !empty($_POST['dbhost']) + !empty($_POST['adminpass']);
         $required = !empty($_POST['dbname']) + !empty($_POST['dbuser']) + isset($_POST['dbpass']) + !empty($_POST['dbhost']) + !empty($_POST['adminpass']);
         $formDisplayData = array(
-            'error' => '',
+            'error' => $message,
             'dbname' => isset($_POST['dbname']) ? $_POST['dbname'] : 'jazyky',
             'dbuser' => isset($_POST['dbuser']) ? $_POST['dbuser'] : 'uzivatelske-jmeno',
             'dbpass' => isset($_POST['dbpass']) ? $_POST['dbpass'] : 'heslo',
