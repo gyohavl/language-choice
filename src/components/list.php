@@ -1,7 +1,8 @@
 <?php
 function showList($list) {
     if ($list == 'students') {
-        $html = '<h1>Studenti <a href="?edit=import-students">(importovat)</a></h1>';
+        $html = '<h1>Studenti</h1>';
+        $html .= '<p><a href=".">zpět</a> | <a href="?edit=import-students">importovat</a></p>';
         $html .= getStudentsTable();
         return adminTemplate($html);
     }

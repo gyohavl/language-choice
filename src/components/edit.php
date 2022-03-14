@@ -2,6 +2,8 @@
 function showEditForm($form, $fill = null, $errorMessage = '') {
     $formBegin = '<form method="post" action=".">';
     $formEnd = '<input type="hidden" name="edit" value="' . $form . '"><input type="submit" value="Odeslat"></form>';
+    $formName = '';
+    $html = '';
 
     switch ($form) {
         case 'import-students':
@@ -11,17 +13,28 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             break;
 
         case 'student':
-            if (empty($_GET['id'])) {
+            if (empty($_GET['id']) && empty($_POST['id'])) {
                 $formName = 'Chyba: chybí ID studenta';
                 $html = '<a href=".">zpět</a>';
                 break;
             }
 
-            $studentId = $_GET['id'];
+            $studentId = isset($_GET['id']) ? $_GET['id'] : $_POST['id'];
             $formName = 'Upravit studenta ' . $studentId;
             $studentData = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE id=?;', true, array($studentId));
-            $html = '';
-            var_dump($studentData);
+
+            if (isset($studentData[0])) {
+                $html = $formBegin . '<input type="hidden" name="id" value="' . $studentId . '">';
+
+                foreach ($studentData[0] as $key => $value) {
+                    if ($key && in_array($key, array('sid', 'email', 'name', 'class', 'choice'))) {
+                        // todo: styling, translation, select boxes, key regeneration
+                        $html .= $key . ' <input type="text" name="' . $key . '" value="' . $value . '"><br>';
+                    }
+                }
+
+                $html .= $formEnd;
+            }
             break;
 
         default:
@@ -51,23 +64,12 @@ function editData($form) {
                     $errorLineNumber = 'na řádku ' . ($lineNumber + 1);
 
                     if ($line) {
-                        $values = explode(',', trim($line));
+                        $validation = validateLine($line);
 
-                        if (count($values) == 4) {
-                            if ($values[0] && $values[1] && $values[2]) {
-                                if (in_array($values[3], getClasses())) {
-                                    $data[] = $values;
-                                } else {
-                                    $errorMessage = $errorLineNumber . ' je špatná třída (zadáno <code>'
-                                        . $values[3] . '</code>, podporováno <code>' . implode('/', getClasses()) . '</code>)';
-                                    break 2;
-                                }
-                            } else {
-                                $errorMessage = $errorLineNumber . ' je jeden sloupec prázdný';
-                                break 2;
-                            }
+                        if ($validation[0]) {
+                            $data[] = $validation[1];
                         } else {
-                            $errorMessage = $errorLineNumber . ' chybí nebo přebývá sloupec';
+                            $errorMessage = $errorLineNumber . $validation[2];
                             break 2;
                         }
                     }
@@ -87,6 +89,38 @@ function editData($form) {
             }
             break;
 
+        case 'student':
+            if (!empty($_POST['id'])) {
+                $query = 'UPDATE `' . prefixTable('students') . '` SET ';
+                $requiredFields = array('sid', 'email', 'name', 'class');
+                $data = array();
+
+                foreach ($requiredFields as $field) {
+                    if (!empty($_POST[$field])) {
+                        $query .= "`$field`=?, ";
+                        $data[] = $_POST[$field];
+                    } else {
+                        $errorMessage = 'chybí data';
+                        break 2;
+                    }
+                }
+
+                $query .= "`choice`=?";
+
+                if (!empty($_POST['choice'])) {
+                    $data[] = $_POST['choice'];
+                } else {
+                    $data[] = null;
+                }
+
+                $query .= ' WHERE `id`=?;';
+                $data[] = $_POST['id'];
+                sql($query, false, $data);
+                $errorMessage = '';
+                $successLink = '?list=students';
+            }
+            break;
+
         default:
             # code...
             break;
@@ -96,7 +130,29 @@ function editData($form) {
         return showEditForm($form, $_POST, $errorMessage);
     }
 
-    return adminTemplate('Hotovo. <a href=".">Pokračovat zpět do administrace…</a>');
+    $successLink = isset($successLink) ? $successLink : '.';
+    $successText = isset($successText) ? $successText : 'Hotovo. <a href="' . $successLink . '">Pokračovat zpět do administrace…</a>';
+    return adminTemplate($successText);
+}
+
+function validateLine($line) {
+    $values = explode(',', trim($line));
+
+    if (count($values) == 4) {
+        if ($values[0] && $values[1] && $values[2]) {
+            if (in_array($values[3], getClasses())) {
+                return array(true, $values, null);
+            } else {
+                $errorMessage = ' zadána špatná třída (zadáno <code>' . $values[3] . '</code>, podporováno <code>' . implode('/', getClasses()) . '</code>)';
+            }
+        } else {
+            $errorMessage = ' je jeden sloupec prázdný';
+        }
+    } else {
+        $errorMessage = ' chybí nebo přebývá sloupec';
+    }
+
+    return array(false, null, $errorMessage);
 }
 
 function createUniqueKey() {
