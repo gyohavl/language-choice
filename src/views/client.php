@@ -2,5 +2,11 @@
 include(__DIR__ . '/../main.php');
 
 if (configExists() && dbConnectionOk()) {
-    echo file_get_contents('templates/client.html');
+    if (!empty($_GET['k'])) {
+        $data = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE `key`=?;', true, array($_GET['k']));
+
+        if (isset($data[0])) {
+            echo fillTemplate('client', $data[0]);
+        }
+    }
 }
