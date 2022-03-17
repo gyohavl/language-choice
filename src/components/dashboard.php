@@ -1,6 +1,9 @@
 <?php
 function showDashboard() {
-    $html = '<h1>Nástěnka</h1><ul><li><a href="?list=students">studenti</a></li></ul>';
+    $html = '<h1>Nástěnka</h1><ul>
+    <li><a href="?list=students">studenti</a></li>
+    <li><a href="?list=languages">jazyky</a></li>
+    </ul>';
     return adminTemplate($html);
     // studenti
     // jazyky

@@ -13,28 +13,35 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             break;
 
         case 'student':
+            $html = $formBegin;
+
             if (empty($_GET['id']) && empty($_POST['id'])) {
-                $formName = 'Chyba: chybí ID studenta';
-                $html = '<a href=".">zpět</a>';
-                break;
-            }
+                $studentId = null;
+                $formName = 'Přidat studenta';
+                $formData = null;
+            } else {
+                $studentId = isset($_GET['id']) ? $_GET['id'] : $_POST['id'];
+                $formName = 'Upravit studenta ' . $studentId;
+                $studentData = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE id=?;', true, array($studentId));
 
-            $studentId = isset($_GET['id']) ? $_GET['id'] : $_POST['id'];
-            $formName = 'Upravit studenta ' . $studentId;
-            $studentData = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE id=?;', true, array($studentId));
-
-            if (isset($studentData[0])) {
-                $html = $formBegin . '<input type="hidden" name="id" value="' . $studentId . '">';
-
-                foreach ($studentData[0] as $key => $value) {
-                    if ($key && in_array($key, array('sid', 'email', 'name', 'class', 'choice'))) {
-                        // todo: styling, translation, select boxes, key regeneration
-                        $html .= $key . ' <input type="text" name="' . $key . '" value="' . $value . '"><br>';
-                    }
+                if (isset($studentData[0])) {
+                    $formData = $studentData[0];
+                    $html .= '<input type="hidden" name="id" value="' . $studentId . '">';
+                } else {
+                    $formName = 'Chyba: student nenalezen';
+                    $html = '<a href=".">zpět</a>';
+                    break;
                 }
-
-                $html .= $formEnd;
             }
+
+            $textFields = array('sid', 'email', 'name', 'class', 'choice');
+
+            foreach ($textFields as $fieldName) {
+                $html .= _t('form', $fieldName) . ' <input type="text" name="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"><br>';
+            }
+
+            $html .= $formEnd;
+            // todo: styling, select boxes, key regeneration
             break;
 
         default:
@@ -90,7 +97,9 @@ function editData($form) {
             break;
 
         case 'student':
-            if (!empty($_POST['id'])) {
+                $studentId = !empty($_POST['id']) ? $_POST['id'] : null;
+            
+                // todo: add student if id is not set
                 $query = 'UPDATE `' . prefixTable('students') . '` SET ';
                 $requiredFields = array('sid', 'email', 'name', 'class');
                 $data = array();
@@ -113,12 +122,14 @@ function editData($form) {
                     $data[] = null;
                 }
 
-                $query .= ' WHERE `id`=?;';
-                $data[] = $_POST['id'];
+                if ($studentId !== null) {
+                    $query .= ' WHERE `id`=?;';
+                    $data[] = $studentId;
+                }
+
                 sql($query, false, $data);
                 $errorMessage = '';
                 $successLink = '?list=students';
-            }
             break;
 
         default:

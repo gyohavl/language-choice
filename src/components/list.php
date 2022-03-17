@@ -5,6 +5,11 @@ function showList($list) {
         $html .= '<p><a href=".">zpět</a> | <a href="?edit=import-students">importovat</a></p>';
         $html .= getStudentsTable();
         return adminTemplate($html);
+    } else if ($list == 'languages') {
+        $html = '<h1>Jazyky</h1>';
+        $html .= '<p><a href=".">zpět</a> | <a href="?edit=language">přidat</a></p>';
+        $html .= getLanguagesTable();
+        return adminTemplate($html);
     }
 }
 
@@ -21,4 +26,8 @@ function getStudentsTable() {
 
     $html .= '</tbody></table>';
     return $html;
+}
+
+function getLanguagesTable() {
+    return '';
 }
