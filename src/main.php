@@ -18,8 +18,12 @@ function adminTemplate($content) {
 function fillTemplate($name, $data) {
     $html = file_get_contents(__DIR__ . '/../templates/' . $name . '.html');
 
-    foreach ($data as $key => $value) {
-        $html = str_replace('{' . $key . '}', $value, $html);
+    if (is_array($data)) {
+        foreach ($data as $key => $value) {
+            $html = str_replace('{' . $key . '}', $value, $html);
+        }
+    } else {
+        $html = str_replace('{content}', $data, $html);
     }
 
     return $html;
