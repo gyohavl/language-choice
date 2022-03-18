@@ -7,6 +7,9 @@ function _t($group, $key) {
             'name' => 'celé jméno',
             'class' => 'třída',
             'choice' => 'volba jazyka'
+        ),
+        'confirm' => array(
+            'delete-student' => 'smazat studenta'
         )
     );
 

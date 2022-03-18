@@ -23,6 +23,7 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                 $studentId = isset($_GET['id']) ? $_GET['id'] : $_POST['id'];
                 $formName = 'Upravit studenta ' . $studentId;
                 $studentData = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE id=?;', true, array($studentId));
+                $html .= '<p><a href="?confirm=delete-student&id=' . $studentId . '">smazat</a></p>';
 
                 if (isset($studentData[0])) {
                     $formData = $studentData[0];
@@ -97,39 +98,43 @@ function editData($form) {
             break;
 
         case 'student':
-                $studentId = !empty($_POST['id']) ? $_POST['id'] : null;
-            
-                // todo: add student if id is not set
-                $query = 'UPDATE `' . prefixTable('students') . '` SET ';
-                $requiredFields = array('sid', 'email', 'name', 'class');
-                $data = array();
+            $studentId = !empty($_POST['id']) ? $_POST['id'] : null;
+            $addStudent = $studentId === null;
+            $query = $addStudent
+                ? 'INSERT INTO `' . prefixTable('students') . '` ('
+                : 'UPDATE `' . prefixTable('students') . '` SET ';
+            $requiredFields = array('sid', 'email', 'name', 'class');
+            $data = array();
 
-                foreach ($requiredFields as $field) {
-                    if (!empty($_POST[$field])) {
-                        $query .= "`$field`=?, ";
-                        $data[] = $_POST[$field];
-                    } else {
-                        $errorMessage = 'chybí data';
-                        break 2;
-                    }
-                }
-
-                $query .= "`choice`=?";
-
-                if (!empty($_POST['choice'])) {
-                    $data[] = $_POST['choice'];
+            foreach ($requiredFields as $field) {
+                if (!empty($_POST[$field])) {
+                    $query .= $addStudent ? "`$field`, " : "`$field`=?, ";
+                    $data[] = $_POST[$field];
                 } else {
-                    $data[] = null;
+                    $errorMessage = 'chybí data';
+                    break 2;
                 }
+            }
 
-                if ($studentId !== null) {
-                    $query .= ' WHERE `id`=?;';
-                    $data[] = $studentId;
-                }
+            $query .= $addStudent ? "`choice`, `key`" : "`choice`=?";
 
-                sql($query, false, $data);
-                $errorMessage = '';
-                $successLink = '?list=students';
+            if (!empty($_POST['choice'])) {
+                $data[] = $_POST['choice'];
+            } else {
+                $data[] = null;
+            }
+
+            if ($addStudent) {
+                $query .= ') VALUES (?, ?, ?, ?, ?, ?);';
+                $data[] = createUniqueKey();
+            } else {
+                $query .= ' WHERE `id`=?;';
+                $data[] = $studentId;
+            }
+
+            sql($query, false, $data);
+            $errorMessage = '';
+            $successLink = '?list=students';
             break;
 
         default:
