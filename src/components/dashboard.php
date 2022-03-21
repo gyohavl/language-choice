@@ -3,6 +3,7 @@ function showDashboard() {
     $html = '<h1>Nástěnka</h1><ul>
     <li><a href="?list=students">studenti</a></li>
     <li><a href="?list=languages">jazyky</a></li>
+    <li><a href="?list=data">další data</a></li>
     </ul>';
     return adminTemplate($html);
     // studenti

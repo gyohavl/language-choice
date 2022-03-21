@@ -4,13 +4,19 @@ function showList($list) {
         $html = '<h1>Studenti</h1>';
         $html .= '<p><a href=".">zpět</a> | <a href="?edit=student">přidat</a> | <a href="?edit=import-students">importovat</a></p>';
         $html .= getStudentsTable();
-        return adminTemplate($html);
     } else if ($list == 'languages') {
         $html = '<h1>Jazyky</h1>';
         $html .= '<p><a href=".">zpět</a> | <a href="?edit=language">přidat</a></p>';
         $html .= getLanguagesTable();
-        return adminTemplate($html);
+    } else if ($list == 'data') {
+        $html = '<h1>Další data</h1>';
+        $html .= '';
+    } else {
+        $html = '<h1>Stránka nenalezena</h1>';
+        $html .= '<p><a href=".">zpět</a></p>';
     }
+
+    return adminTemplate($html);
 }
 
 function getStudentsTable() {
@@ -53,4 +59,9 @@ function isLanguageAvailable($class, $langId) {
     $result = sql('SELECT `limit` FROM `' . prefixTable('languages') . '` WHERE `id`=?;', true, array($langId));
     $limit = isset($result[0]) && isset($result[0][0]) ? intval($result[0][0]) : 0;
     return getLanguageOccupancy($class, $langId) < $limit;
+}
+
+function getDataValue($name) {
+    $result = sql('SELECT `value` FROM `' . prefixTable('data') . '` WHERE `name`=?;', true, array($name));
+    return isset($result[0]) && isset($result[0][0]) ? $result[0][0] : null;
 }

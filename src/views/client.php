@@ -7,9 +7,11 @@ function getClientView() {
     if (configExists() && dbConnectionOk()) {
         if (!empty($_GET['k'])) {
             $data = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE `key`=?;', true, array($_GET['k']));
+            $fill = $data[0];
+            $fill['info'] = getDataValue('info');
 
             if (isset($data[0])) {
-                return fillTemplate('client-content', $data[0]);
+                return fillTemplate('client-content', $fill);
             } else {
                 return '<p>Tento přihlašovací odkaz je neplatný. Pokud si myslíte, že jde o chybu, kontaktujte správce aplikace.</p>';
             }
