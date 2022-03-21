@@ -8,8 +8,15 @@ function _t($group, $key) {
             'class' => 'třída',
             'choice' => 'volba jazyka'
         ),
+        'form-l' => array(
+            'name' => 'jazyk (název)',
+            'class' => 'pro třídu (' . implode('/', getClasses()) . ')',
+            'limit' => 'kapacita',
+            'export' => 'označení pro export'
+        ),
         'confirm' => array(
-            'delete-student' => 'smazat studenta'
+            'delete-student' => 'smazat studenta',
+            'delete-language' => 'smazat jazyk'
         ),
         'success' => array(
             'login' => 'Výborně! Byli jste přihlášeni.',

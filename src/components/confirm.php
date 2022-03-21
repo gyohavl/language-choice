@@ -28,6 +28,13 @@ function confirm() {
                 }
                 break;
 
+            case 'delete-language':
+                if ($id !== null) {
+                    sql('DELETE FROM `' . prefixTable('languages') . '` WHERE id=?;', false, array($id));
+                    $successLink = '?list=languages';
+                }
+                break;
+
             default:
                 # code...
                 break;
@@ -44,6 +51,6 @@ function confirmForm($confirm, $id) {
     $html .= $id !== null ? ' č. ' . $id . '?' : '';
     $html .= '<form method="post" action=".">';
     $html .= $id !== null ? '<input type="hidden" name="id" value="' . $id . '">' : '';
-    $html .= '<input type="hidden" name="confirm" value="' . $confirm . '"><input type="submit" name="confirmed" value="Potvrdit"></form>';
+    $html .= '<input type="hidden" name="confirm" value="' . $confirm . '"><input type="submit" name="confirmed" value="Potvrdit"> <a href=".">storno</a></form>';
     return adminTemplate($html);
 }

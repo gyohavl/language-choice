@@ -19,11 +19,12 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                 $studentId = null;
                 $formName = 'Přidat studenta';
                 $formData = null;
+                $html .= '<p><a href="?list=students">zpět</a></p>';
             } else {
                 $studentId = isset($_GET['id']) ? $_GET['id'] : $_POST['id'];
                 $formName = 'Upravit studenta ' . $studentId;
                 $studentData = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE id=?;', true, array($studentId));
-                $html .= '<p><a href="?confirm=delete-student&id=' . $studentId . '">smazat</a></p>';
+                $html .= '<p><a href="?list=students">zpět</a> | <a href="?confirm=delete-student&id=' . $studentId . '">smazat</a></p>';
 
                 if (isset($studentData[0])) {
                     $formData = $studentData[0];
@@ -36,13 +37,53 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             }
 
             $textFields = array('sid', 'email', 'name', 'class', 'choice');
+            $html .= '<table>';
 
             foreach ($textFields as $fieldName) {
-                $html .= _t('form', $fieldName) . ' <input type="text" name="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"><br>';
+                $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form', $fieldName) . '</label></td>
+                    <td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
             }
 
+            $html .= '</table>';
             $html .= $formEnd;
             // todo: styling, select boxes, key regeneration
+            break;
+
+        case 'language':
+            $html = $formBegin;
+
+            if (empty($_GET['id']) && empty($_POST['id'])) {
+                $languageId = null;
+                $formName = 'Přidat jazyk';
+                $formData = null;
+                $html .= '<p><a href="?list=languages">zpět</a></p>';
+            } else {
+                $languageId = isset($_GET['id']) ? $_GET['id'] : $_POST['id'];
+                $formName = 'Upravit jazyk ' . $languageId;
+                $languageData = sql('SELECT * FROM `' . prefixTable('languages') . '` WHERE id=?;', true, array($languageId));
+                $html .= '<p><a href="?list=languages">zpět</a> | <a href="?confirm=delete-language&id=' . $languageId . '">smazat</a></p>';
+
+                if (isset($languageData[0])) {
+                    $formData = $languageData[0];
+                    $html .= '<input type="hidden" name="id" value="' . $languageId . '">';
+                } else {
+                    $formName = 'Chyba: jazyk nenalezen';
+                    $html = '<a href=".">zpět</a>';
+                    break;
+                }
+            }
+
+            $textFields = array('name', 'class', 'limit', 'export');
+            $html .= '<table>';
+
+            foreach ($textFields as $fieldName) {
+                $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form-l', $fieldName) . '</label></td>
+                    <td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
+            }
+
+            $html .= '</table>';
+            $html .= $formEnd;
+            // todo: styling, select box
             break;
 
         default:
@@ -138,6 +179,39 @@ function editData($form) {
             sql($query, false, $data);
             $errorMessage = '';
             $successLink = '?list=students';
+            break;
+
+        case 'language':
+            $languageId = !empty($_POST['id']) ? $_POST['id'] : null;
+            $addLanguage = $languageId === null;
+            $query = $addLanguage
+                ? 'INSERT INTO `' . prefixTable('languages') . '` ('
+                : 'UPDATE `' . prefixTable('languages') . '` SET ';
+            $requiredFields = array('name', 'class', 'limit', 'export');
+            $data = array();
+
+            foreach ($requiredFields as $field) {
+                if (!empty($_POST[$field])) {
+                    $query .= $addLanguage ? "`$field`, " : "`$field`=?, ";
+                    $data[] = $_POST[$field];
+                } else {
+                    $errorMessage = 'chybí data';
+                    break 2;
+                }
+            }
+
+            $query = rtrim($query, ', ');
+
+            if ($addLanguage) {
+                $query .= ') VALUES (?, ?, ?, ?);';
+            } else {
+                $query .= ' WHERE `id`=?;';
+                $data[] = $languageId;
+            }
+            echo $query;
+            sql($query, false, $data);
+            $errorMessage = '';
+            $successLink = '?list=languages';
             break;
 
         default:
