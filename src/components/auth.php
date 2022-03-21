@@ -12,7 +12,7 @@ function showLoginForm() {
     if (isset($_POST['adminpass'])) {
         if ($config['adminpass'] == $_POST['adminpass']) {
             $_SESSION['adminpass'] = password_hash($config['adminpass'], PASSWORD_DEFAULT);
-            return adminTemplate('Výborně! Byli jste přihlášeni. <a href=".">Pokračovat do administrace…</a>');
+            redirectMessage('login');
         }
 
         $formDisplayData['error'] = 'Zadali jste špatné heslo.';

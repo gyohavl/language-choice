@@ -60,6 +60,8 @@ function fillInput($fill, $key) {
 }
 
 function editData($form) {
+    $successText = 'done';
+    $successLink = '.';
     $errorMessage = 'někde nastala chyba';
 
     switch ($form) {
@@ -92,6 +94,7 @@ function editData($form) {
                 }
 
                 $errorMessage = '';
+                $successLink = '?list=students';
             } else {
                 $errorMessage = 'odeslali jste prázdný formulář';
             }
@@ -146,9 +149,7 @@ function editData($form) {
         return showEditForm($form, $_POST, $errorMessage);
     }
 
-    $successLink = isset($successLink) ? $successLink : '.';
-    $successText = isset($successText) ? $successText : 'Hotovo. <a href="' . $successLink . '">Pokračovat zpět do administrace…</a>';
-    return adminTemplate($successText);
+    redirectMessage($successText, 'success', $successLink);
 }
 
 function validateLine($line) {

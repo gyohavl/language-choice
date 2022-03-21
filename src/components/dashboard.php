@@ -15,3 +15,17 @@ function showDashboard() {
     // změna zcizeného klíče
     // vymazat všechna data z databáze
 }
+
+function redirectMessage($message = 'done', $type = 'success', $url = '.') {
+    $query = parse_url($url, PHP_URL_QUERY);
+    $separator = $query ? '&' : '?';
+    header("Location: $url$separator$type=$message");
+}
+
+function getInfoMessage() {
+    if (!empty($_GET['success'])) {
+        return '<div class="success">' . _t('success', $_GET['success']) . '</div>';
+    }
+
+    return '';
+}

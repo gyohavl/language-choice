@@ -1,5 +1,8 @@
 <?php
 function confirm() {
+    $successText = 'done';
+    $successLink = '.';
+
     if (empty($_GET['confirm']) && empty($_POST['confirm'])) {
         return 'chyba';
     }
@@ -30,9 +33,7 @@ function confirm() {
                 break;
         }
 
-        $successLink = isset($successLink) ? $successLink : '.';
-        $successText = isset($successText) ? $successText : 'Hotovo. <a href="' . $successLink . '">Pokračovat zpět do administrace…</a>';
-        return adminTemplate($successText);
+        redirectMessage($successText, 'success', $successLink);
     } else {
         return confirmForm($confirm, $id);
     }

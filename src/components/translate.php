@@ -10,6 +10,10 @@ function _t($group, $key) {
         ),
         'confirm' => array(
             'delete-student' => 'smazat studenta'
+        ),
+        'success' => array(
+            'login' => 'Výborně! Byli jste přihlášeni.',
+            'done' => 'Hotovo.'
         )
     );
 

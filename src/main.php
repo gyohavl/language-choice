@@ -14,7 +14,7 @@ if (configExists()) {
 }
 
 function adminTemplate($content) {
-    return fillTemplate('admin', array('content' => $content));
+    return fillTemplate('admin', array('content' => $content, 'message' => getInfoMessage()));
 }
 
 function fillTemplate($name, $data) {
