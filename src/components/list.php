@@ -10,7 +10,8 @@ function showList($list) {
         $html .= getLanguagesTable();
     } else if ($list == 'data') {
         $html = '<h1>Další data</h1>';
-        $html .= '';
+        $html .= '<p><a href=".">zpět</a></p>';
+        $html .= getDataTable();
     } else {
         $html = '<h1>Stránka nenalezena</h1>';
         $html .= '<p><a href=".">zpět</a></p>';
@@ -64,4 +65,25 @@ function isLanguageAvailable($class, $langId) {
 function getDataValue($name) {
     $result = sql('SELECT `value` FROM `' . prefixTable('data') . '` WHERE `name`=?;', true, array($name));
     return isset($result[0]) && isset($result[0][0]) ? $result[0][0] : null;
+}
+
+function getDataTable() {
+    fillDataTable();
+    $result = sql('SELECT * FROM `' . prefixTable('data') . '`;');
+    $resultData = array();
+    $html = '';
+
+    foreach ($result as $row) {
+        $resultData[$row['name']] = $row['value'];
+    }
+
+    $dataFields = getDataFields();
+
+    foreach ($dataFields as $categoryName => $category) {
+        foreach ($category as $fieldName) {
+            $html .= _t($categoryName, $fieldName) . ' => ' . $resultData[_field($categoryName, $fieldName)] . '<br>';
+        }
+    }
+
+    return $html;
 }

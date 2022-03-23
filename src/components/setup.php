@@ -93,12 +93,33 @@ function showDbSetup() {
                 `value` text NULL
             ) " . getSqlLanguageSettings() . ";", false);
 
+            fillDataTable();
+
             return adminTemplate('Tabulky byly vytvořeny. <a href=".">Pokračovat do administrace…</a>');
         } else {
             return adminTemplate(
                 '<form method="post">Nyní dojde k vytvoření tabulek v databázi (jejich názvy jsou vypsány níže).<br>'
                     . 'Existující tabulky se stejným názvem budou smazány. <input type="submit" name="dbcreate" value="Souhlasím"></form>'
                     . '<code>' . prefixTable('students') . '<br>' . prefixTable('languages') . '<br>' . prefixTable('data') . '</code>'
+            );
+        }
+    }
+}
+
+function fillDataTable() {
+    $result = sql('SELECT `name` FROM `' . prefixTable('data') . '`');
+    $toInsert = array_fill_keys(flattenDataFields(), true);
+
+    foreach ($result as $key => $value) {
+        $toInsert[$value['name']] = false;
+    }
+
+    foreach ($toInsert as $key => $value) {
+        if ($value) {
+            sql(
+                'INSERT INTO `' . prefixTable('data') . '` (`name`, `value`) VALUES (?, ?);',
+                false,
+                array($key, null)
             );
         }
     }

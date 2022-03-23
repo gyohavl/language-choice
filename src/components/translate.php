@@ -21,6 +21,9 @@ function _t($group, $key) {
         'success' => array(
             'login' => 'Výborně! Byli jste přihlášeni.',
             'done' => 'Hotovo.'
+        ),
+        'text' => array(
+            'client' => 'text nahoře na webu'
         )
     );
 

@@ -34,3 +34,28 @@ function fillTemplate($name, $data) {
 function getClasses() {
     return array(5, 9);
 }
+
+function getDataFields() {
+    return array(
+        'time' => array('from', 'to'),
+        'text' => array('client', 'email_sender', 'email_subject', 'email_body'),
+        'mailer' => array('host', 'email', 'password'),
+    );
+}
+
+function _field($category, $field) {
+    return $category . '.' . $field;
+}
+
+function flattenDataFields() {
+    $returnArr = array();
+    $dataFields = getDataFields();
+
+    foreach ($dataFields as $categoryName => $category) {
+        foreach ($category as $fieldName) {
+            $returnArr[] = _field($categoryName, $fieldName);
+        }
+    }
+
+    return $returnArr;
+}
