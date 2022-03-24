@@ -86,6 +86,30 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             // todo: styling, select box
             break;
 
+        case 'data':
+            if (!empty($_GET['name']) || !empty($_POST['name'])) {
+                $html = $formBegin;
+                $name = isset($_GET['name']) ? $_GET['name'] : $_POST['name'];
+                $html .= '<p><a href="?list=data">zpět</a></p>';
+                $nameArr = _fieldBack($name);
+                $formName = 'Upravit ' . _t($nameArr[0], $nameArr[1]);
+                $html .= '<input type="hidden" name="name" value="' . $name . '">';
+
+                if ($nameArr[0] == 'time') {
+                    $html .= '<input type="date" onchange="console.log(this.value);">';
+                    $html .= '<input type="time" onchange="console.log(this.value);"><br>';
+                }
+
+                if ($nameArr[1] == 'email_body' || $nameArr[1] == 'client') {
+                    $html .= '<textarea type="text" name="value">' . getDataValue($name) . '</textarea>';
+                } else {
+                    $html .= '<input type="text" name="value" value="' . getDataValue($name) . '">';
+                }
+
+                $html .= $formEnd;
+            }
+            break;
+
         default:
             $formName = 'Chyba: formulář nenalezen';
             $html = '<a href=".">zpět</a>';
@@ -208,10 +232,21 @@ function editData($form) {
                 $query .= ' WHERE `id`=?;';
                 $data[] = $languageId;
             }
-            echo $query;
+
             sql($query, false, $data);
             $errorMessage = '';
             $successLink = '?list=languages';
+            break;
+
+        case 'data':
+            if (!empty($_POST['name'])) {
+                $name = $_POST['name'];
+                $value = !empty($_POST['value']) ? $_POST['value'] : null;
+                $query = 'UPDATE `' . prefixTable('data') . '` SET `value`=? WHERE `name`=?;';
+                sql($query, false, array($value, $name));
+                $errorMessage = '';
+                $successLink = '?list=data';
+            }
             break;
 
         default:

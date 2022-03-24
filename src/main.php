@@ -47,6 +47,10 @@ function _field($category, $field) {
     return $category . '.' . $field;
 }
 
+function _fieldBack($name) {
+    return explode('.', $name);
+}
+
 function flattenDataFields() {
     $returnArr = array();
     $dataFields = getDataFields();

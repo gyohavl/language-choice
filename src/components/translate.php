@@ -22,9 +22,24 @@ function _t($group, $key) {
             'login' => 'Výborně! Byli jste přihlášeni.',
             'done' => 'Hotovo.'
         ),
+        'time' => array(
+            'heading' => 'Časy',
+            'from' => 'čas spuštění',
+            'to' => 'čas ukončení'
+        ),
         'text' => array(
-            'client' => 'text nahoře na webu'
-        )
+            'heading' => 'Texty',
+            'client' => 'text nahoře na webu',
+            'email_sender' => 'odesílatel e-mailu',
+            'email_subject' => 'předmět e-mailu',
+            'email_body' => 'tělo e-mailu'
+        ),
+        'mailer' => array(
+            'heading' => 'Nastavení e-mailového serveru',
+            'host' => 'adresa serveru (host)',
+            'email' => 'e-mailová adresa',
+            'password' => 'heslo'
+        ),
     );
 
     return (isset($strings[$group]) && isset($strings[$group][$key])) ? $strings[$group][$key] : "$group.$key";

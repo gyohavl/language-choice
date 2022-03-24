@@ -74,15 +74,23 @@ function getDataTable() {
     $html = '';
 
     foreach ($result as $row) {
-        $resultData[$row['name']] = $row['value'];
+        $resultData[$row['name']] = $row['value'] ? $row['value'] : '<i>(prázdné)</i>';
     }
 
     $dataFields = getDataFields();
 
     foreach ($dataFields as $categoryName => $category) {
+        $html .= '<h2>' . _t($categoryName, 'heading') . '</h2><table><tbody>';
+
         foreach ($category as $fieldName) {
-            $html .= _t($categoryName, $fieldName) . ' => ' . $resultData[_field($categoryName, $fieldName)] . '<br>';
+            $html .= '<tr><th>' . _t($categoryName, $fieldName) . '</th><td>'
+                . $resultData[_field($categoryName, $fieldName)]
+                . '</td><td><a href="?edit=data&name='
+                . _field($categoryName, $fieldName)
+                . '">upravit</a></td></tr>';
         }
+
+        $html .= '</tbody></table>';
     }
 
     return $html;
