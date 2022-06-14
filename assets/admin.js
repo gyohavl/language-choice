@@ -9,5 +9,9 @@ try {
 } catch (error) { }
 
 function updateTime(id) {
-	document.getElementById(id).value = (document.getElementById(id + 'd').value || '2050-01-01') + ' ' + (document.getElementById(id + 't').value || '00:00');
+	if (document.getElementById(id + 'd').value) {
+		document.getElementById(id).value = document.getElementById(id + 'd').value + ' ' + (document.getElementById(id + 't').value || '00:00');
+	} else {
+		document.getElementById(id).value = '';
+	}
 }

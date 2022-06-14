@@ -18,7 +18,7 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             if (empty($_GET['id']) && empty($_POST['id'])) {
                 $studentId = null;
                 $formName = 'Přidat studenta';
-                $formData = null;
+                $formData = $fill ? $fill : null;
                 $html .= '<p><a href="?list=students">zpět</a></p>';
             } else {
                 $studentId = isset($_GET['id']) ? $_GET['id'] : $_POST['id'];
@@ -27,7 +27,7 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                 $html .= '<p><a href="?list=students">zpět</a> | <a href="?confirm=delete-student&id=' . $studentId . '">smazat</a></p>';
 
                 if (isset($studentData[0])) {
-                    $formData = $studentData[0];
+                    $formData = $fill ? $fill : $studentData[0];
                     $html .= '<input type="hidden" name="id" value="' . $studentId . '">';
                 } else {
                     $formName = 'Chyba: student nenalezen';
@@ -62,7 +62,7 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             if (empty($_GET['id']) && empty($_POST['id'])) {
                 $languageId = null;
                 $formName = 'Přidat jazyk';
-                $formData = null;
+                $formData = $fill ? $fill : null;
                 $html .= '<p><a href="?list=languages">zpět</a></p>';
             } else {
                 $languageId = isset($_GET['id']) ? $_GET['id'] : $_POST['id'];
@@ -71,7 +71,7 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                 $html .= '<p><a href="?list=languages">zpět</a> | <a href="?confirm=delete-language&id=' . $languageId . '">smazat</a></p>';
 
                 if (isset($languageData[0])) {
-                    $formData = $languageData[0];
+                    $formData = $fill ? $fill : $languageData[0];
                     $html .= '<input type="hidden" name="id" value="' . $languageId . '">';
                 } else {
                     $formName = 'Chyba: jazyk nenalezen';
@@ -119,7 +119,7 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                         $html .= '<input type="date" onchange="updateTime(\'' . $fid . '\');" id="' . $fid . 'd" value="' . $datetime[0] . '">';
                         $html .= '<input type="time" onchange="updateTime(\'' . $fid . '\');" id="' . $fid . 't" value="' . $datetime[1] . '">';
                         $html .= '<input type="button" value="propsat →" onclick="updateTime(\'' . $fid . '\');">';
-                        $otherAttributes = ' placeholder="výsledný čas"';
+                        $otherAttributes = ' placeholder="RRRR-MM-DD hh:mm"';
                     }
 
                     if ($field == 'email_body' || $field == 'client') {
@@ -267,18 +267,34 @@ function editData($form) {
         case 'data':
             $name = isset($_GET['name']) ? $_GET['name'] : (isset($_POST['name']) ? $_POST['name'] : 'none');
             $fields = getDataFormFields($name);
+            $errorMessage = '';
 
             foreach ($fields as $category => $catFields) {
                 foreach ($catFields as $field) {
                     $fid = _field($category, $field);
                     $fid2 = _field($category, $field, '_');
                     $value = !empty($_POST[$fid2]) ? $_POST[$fid2] : null;
+
+                    // validation
+                    if ($category == 'time' && $value) {
+                        try {
+                            $date = new DateTime($value);
+
+                            if ($date->format("Y-m-d H:i") != $value) {
+                                $errorMessage = 'chybně zadané datum';
+                                continue;
+                            }
+                        } catch (\Throwable $th) {
+                            $errorMessage = 'chybně zadané datum';
+                            continue;
+                        }
+                    }
+
                     $query = 'UPDATE `' . prefixTable('data') . '` SET `value`=? WHERE `name`=?;';
                     sql($query, false, array($value, $fid));
                 }
             }
 
-            $errorMessage = '';
             $successLink = '?list=data';
             break;
 

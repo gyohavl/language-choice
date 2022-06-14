@@ -26,9 +26,11 @@ function getStudentsTable() {
     </tr></thead><tbody>';
     $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
     $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 2) . '?k=';
+    $languagesArray = getLanguagesArray();
 
     foreach ($studentsTable as $row) {
-        $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[3]</td><td>$row[4]</td><td>$row[5]</td><td>$row[6]</td><td><a href=\"?edit=student&id=$row[0]\">upravit</a></td><td><input type=\"text\" value=\"$linkPrefix$row[2]\" onclick=\"this.setSelectionRange(0, this.value.length)\" readonly></td><td>$row[2]</td></tr>";
+        $language = $row[6] ? $languagesArray[$row[6]] : '<i class="empty">(žádný)</i>';
+        $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[3]</td><td>$row[4]</td><td>$row[5]</td><td>$language</td><td><a href=\"?edit=student&id=$row[0]\">upravit</a></td><td><input type=\"text\" value=\"$linkPrefix$row[2]\" onclick=\"this.setSelectionRange(0, this.value.length)\" readonly></td><td>$row[2]</td></tr>";
     }
 
     $html .= '</tbody></table>';
@@ -53,7 +55,7 @@ function getLanguagesTable() {
 function getLanguagesSelect($chosen) {
     $html = '<select name="choice" id="choice">';
     $languagesTable = sql('SELECT * FROM `' . prefixTable('languages') . '`;');
-    $html .= '<option value="">(žádná)</option>';
+    $html .= '<option value="" style="font-style:italic">(žádná)</option>';
 
     foreach ($languagesTable as $row) {
         $numberOfChoices = getLanguageOccupancy($row['class'], $row['id']);
@@ -63,6 +65,17 @@ function getLanguagesSelect($chosen) {
 
     $html .= '</select>';
     return $html;
+}
+
+function getLanguagesArray() {
+    $languagesTable = sql('SELECT * FROM `' . prefixTable('languages') . '`;');
+    $retArr = array();
+
+    foreach ($languagesTable as $row) {
+        $retArr[$row[0]] = "$row[1] [$row[2]]";
+    }
+
+    return $retArr;
 }
 
 function getLanguageOccupancy($class, $langId) {
@@ -102,7 +115,7 @@ function getDataTable() {
     $html = '';
 
     foreach ($result as $row) {
-        $resultData[$row['name']] = $row['value'] ? $row['value'] : '<i>(prázdné)</i>';
+        $resultData[$row['name']] = $row['value'] ? $row['value'] : '<i class="empty">(prázdné)</i>';
     }
 
     $dataFields = getDataFields();

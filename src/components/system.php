@@ -2,8 +2,8 @@
 function systemPage($view) {
 	if ($view == 'state') {
 		$html = '<h1>Stav systému</h1><ul>';
-		$choiceStates = array('zatím nebylo naplánováno', 'je naplánováno', 'probíhá', 'bylo ukončeno');
-		$html .= '<li>přihlašování ' . (isChoiceOpen() ? 'probíhá' : 'neprobíhá, '.$choiceStates[choiceState()]) . '</li>';
+		$choiceStates = array('zatím nebylo naplánováno 🔴', 'je naplánováno ⌛', 'probíhá', 'bylo ukončeno ✅');
+		$html .= '<li>přihlašování ' . (isChoiceOpen() ? 'probíhá 🟢' : 'neprobíhá, ' . $choiceStates[choiceState()]) . ' <a href="?edit=data&name=time">(upravit)</a></li>';
 		$weekdays = array('neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota');
 		$classes = getClasses();
 		$states = array('🔴 chybí', '🟢 v pořádku');
@@ -28,7 +28,7 @@ function systemPage($view) {
 			$time = getDataValue('time.' . $fromTo);
 			$states = array(
 				'from' => array('🔴 chybí, je nutné ho doplnit, aby přihlašování mohlo začít ', '🟢 v pořádku'),
-				'to' => array('🟡 není nastaven, přihlašování nebude ukončeno', '🟢 v pořádku', '🔴 čas ukončení je před časem spuštění')
+				'to' => array('🟡 není nastaven, přihlašování nebude ukončeno', '🟢 v pořádku', '🔴 čas ukončení není po čase spuštění')
 			);
 
 			if ($time) {
@@ -45,7 +45,10 @@ function systemPage($view) {
 
 			$html .= ' <a href="?edit=data&name=time.' . $fromTo . '">(upravit)</a></li>';
 		}
-		// z n studentů si m studentů zvolilo jazyk
+
+		$result = sql('SELECT COUNT(*) FROM `' . prefixTable('students') . '` WHERE `choice` IS NULL', true);
+		$number = isset($result[0]) && isset($result[0][0]) ? intval($result[0][0]) : 0;
+		$html .= $number ? '<li>ještě ' . $number . ' studentů nemá zvolený jazyk 🟡</li>' : '<li>všichni studenti mají zvolený jazyk 🟢</li>';
 		// 	<li>text nahoře na webu je zadán, uživatel Jakub Novák (jakub.novak@email.cz) se spisovým číslem 123, který nastupuje z 9. třídy ho vidí takto:</li>
 		// </ul>';
 		// vyplněný web Jakuba Nováka odpovídající aktuální situaci
