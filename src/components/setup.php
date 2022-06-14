@@ -32,7 +32,6 @@ return array(
 );
 ");
 
-                // return adminTemplate('Výborně! Údaje byly nastaveny. <a href=".">Pokračovat do administrace…</a>');
                 redirectMessage('setup');
             }
 
@@ -96,7 +95,6 @@ function showDbSetup() {
 
             fillDataTable();
 
-            // return adminTemplate('Tabulky byly vytvořeny. <a href=".">Pokračovat do administrace…</a>');
             redirectMessage('tables');
         } else {
             return adminTemplate(

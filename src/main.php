@@ -81,3 +81,39 @@ function getDataFormFields($name) {
     
     return $df;
 }
+
+function choiceState() {
+    $timeFrom = getDataValue('time.from');
+    $timeTo = getDataValue('time.to');
+    $now = new DateTime('now');
+
+    if ($timeFrom) {
+        $processedTimeFrom = new DateTime($timeFrom);
+
+        if ($now >= $processedTimeFrom) {
+            if ($timeTo) {
+                $processedTimeTo = new DateTime($timeTo);
+
+                if ($now <= $processedTimeTo) {
+                    return 2;
+                } else {
+                    return 3;
+                }
+            } else {
+                return 2;
+            }
+        } else {
+            return 1;
+        }
+    } else {
+        return 0;
+    }
+}
+
+function isChoiceOpen() {
+    return choiceState() === 2;
+}
+
+function isChoicePast() {
+    return choiceState() === 3;
+}
