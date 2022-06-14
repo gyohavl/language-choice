@@ -44,8 +44,8 @@ function getDataFields() {
     );
 }
 
-function _field($category, $field) {
-    return $category . '.' . $field;
+function _field($category, $field, $separator = '.') {
+    return $category . $separator . $field;
 }
 
 function _fieldBack($name) {
@@ -63,4 +63,20 @@ function flattenDataFields() {
     }
 
     return $returnArr;
+}
+
+function getDataFormFields($name) {
+    $df = getDataFields();
+    $fdf = flattenDataFields();
+
+    if ($name) {
+        if (isset($df[$name])) {
+            return array($name => $df[$name]);
+        } else if (in_array($name, $fdf)) {
+            $nameArr = _fieldBack($name);
+            return array($nameArr[0] => array($nameArr[1]));
+        }
+    }
+    
+    return $df;
 }

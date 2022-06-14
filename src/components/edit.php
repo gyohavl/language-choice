@@ -99,27 +99,36 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             break;
 
         case 'data':
-            if (!empty($_GET['name']) || !empty($_POST['name'])) {
-                $html = $formBegin;
-                $name = isset($_GET['name']) ? $_GET['name'] : $_POST['name'];
-                $html .= '<p><a href="?list=data">zpět</a></p>';
-                $nameArr = _fieldBack($name);
-                $formName = 'Upravit ' . _t($nameArr[0], $nameArr[1]);
-                $html .= '<input type="hidden" name="name" value="' . $name . '">';
+            $formName = 'Upravit další data';
+            $html = $formBegin;
+            $name = isset($_GET['name']) ? $_GET['name'] : (isset($_POST['name']) ? $_POST['name'] : 'none');
+            $fields = getDataFormFields($name);
+            $html .= '<p><a href="?list=data">zpět</a></p>';
+            $html .= '<input type="hidden" name="name" value="' . $name . '">';
+            $html .= '<table>';
 
-                if ($nameArr[0] == 'time') {
-                    $html .= '<input type="date" onchange="console.log(this.value);">';
-                    $html .= '<input type="time" onchange="console.log(this.value);"><br>';
+            foreach ($fields as $category => $catFields) {
+                foreach ($catFields as $field) {
+                    $fid = _field($category, $field);
+                    $html .= '<tr><td><label for="' . $fid . '">' . _t($category, $field) . '</label></td><td>';
+
+                    if ($category == 'time') {
+                        $html .= '<input type="date" onchange="console.log(this.value);">';
+                        $html .= '<input type="time" onchange="console.log(this.value);"><br>';
+                    }
+
+                    if ($field == 'email_body' || $field == 'client') {
+                        $html .= '<textarea type="text" name="' . $fid . '" id="' . $fid . '">' . getDataValue($fid) . '</textarea>';
+                    } else {
+                        $html .= '<input type="text" name="' . $fid . '" id="' . $fid . '" value="' . getDataValue($fid) . '">';
+                    }
+
+                    $html .= '</td></tr>';
                 }
-
-                if ($nameArr[1] == 'email_body' || $nameArr[1] == 'client') {
-                    $html .= '<textarea type="text" name="value">' . getDataValue($name) . '</textarea>';
-                } else {
-                    $html .= '<input type="text" name="value" value="' . getDataValue($name) . '">';
-                }
-
-                $html .= $formEnd;
             }
+
+            $html .= '</table>';
+            $html .= $formEnd;
             break;
 
         default:
@@ -251,14 +260,21 @@ function editData($form) {
             break;
 
         case 'data':
-            if (!empty($_POST['name'])) {
-                $name = $_POST['name'];
-                $value = !empty($_POST['value']) ? $_POST['value'] : null;
-                $query = 'UPDATE `' . prefixTable('data') . '` SET `value`=? WHERE `name`=?;';
-                sql($query, false, array($value, $name));
-                $errorMessage = '';
-                $successLink = '?list=data';
+            $name = isset($_GET['name']) ? $_GET['name'] : (isset($_POST['name']) ? $_POST['name'] : 'none');
+            $fields = getDataFormFields($name);
+
+            foreach ($fields as $category => $catFields) {
+                foreach ($catFields as $field) {
+                    $fid = _field($category, $field);
+                    $fid2 = _field($category, $field, '_');
+                    $value = !empty($_POST[$fid2]) ? $_POST[$fid2] : null;
+                    $query = 'UPDATE `' . prefixTable('data') . '` SET `value`=? WHERE `name`=?;';
+                    sql($query, false, array($value, $fid));
+                }
             }
+
+            $errorMessage = '';
+            $successLink = '?list=data';
             break;
 
         default:

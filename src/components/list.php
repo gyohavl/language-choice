@@ -10,7 +10,7 @@ function showList($list) {
         $html .= getLanguagesTable();
     } else if ($list == 'data') {
         $html = '<h1>Další data</h1>';
-        $html .= '<p><a href=".">zpět</a></p>';
+        $html .= '<p><a href=".">zpět</a> | <a href="?edit=data">upravit vše</a></p>';
         $html .= getDataTable();
     } else {
         $html = '<h1>Stránka nenalezena</h1>';
@@ -108,14 +108,13 @@ function getDataTable() {
     $dataFields = getDataFields();
 
     foreach ($dataFields as $categoryName => $category) {
-        $html .= '<h2>' . _t($categoryName, 'heading') . '</h2><table><tbody>';
+        $html .= '<h2>' . _t($categoryName, 'heading') . ' <a href="?edit=data&name=' . $categoryName . '">(upravit)</a></h2><table><tbody>';
 
         foreach ($category as $fieldName) {
             $html .= '<tr><th>' . _t($categoryName, $fieldName) . '</th><td>'
-                . $resultData[_field($categoryName, $fieldName)]
-                . '</td><td><a href="?edit=data&name='
-                . _field($categoryName, $fieldName)
-                . '">upravit</a></td></tr>';
+                . $resultData[_field($categoryName, $fieldName)] . '</td>';
+            $html .= '<td><a href="?edit=data&name=' . _field($categoryName, $fieldName) . '">upravit</a></td>';
+            $html .= '</tr>';
         }
 
         $html .= '</tbody></table>';
