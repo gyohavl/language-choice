@@ -126,7 +126,7 @@ function getDataTable() {
         foreach ($category as $fieldName) {
             $html .= '<tr><th>' . _t($categoryName, $fieldName) . '</th><td>'
                 . $resultData[_field($categoryName, $fieldName)] . '</td>';
-            $html .= '<td><a href="?edit=data&name=' . _field($categoryName, $fieldName) . '">upravit</a></td>';
+            // $html .= '<td><a href="?edit=data&name=' . _field($categoryName, $fieldName) . '">upravit</a></td>';
             $html .= '</tr>';
         }
 

@@ -7,10 +7,10 @@ function getClientView() {
     if (configExists() && dbConnectionOk()) {
         if (!empty($_GET['k'])) {
             $data = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE `key`=?;', true, array($_GET['k']));
-            $fill = $data[0];
-            $fill['info'] = getDataValue('text.client');
-            
+
             if (isset($data[0])) {
+                $fill = $data[0];
+                $fill['info'] = getDataValue('text.client');
                 $fill['languages'] = getClientLanguages($data[0]['choice']);
                 return fillTemplate('client-content', $fill);
             } else {

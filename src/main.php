@@ -9,6 +9,9 @@ include(__DIR__ . '/components/edit.php');
 include(__DIR__ . '/components/confirm.php');
 include(__DIR__ . '/components/system.php');
 include(__DIR__ . '/components/translate.php');
+include(__DIR__ . '/mailer/PHPMailer.php');
+include(__DIR__ . '/mailer/Exception.php');
+include(__DIR__ . '/mailer/SMTP.php');
 
 if (configExists()) {
     $config = include(__DIR__ . '/../config.php');
@@ -42,6 +45,7 @@ function getDataFields() {
         'time' => array('from', 'to'),
         'text' => array('client', 'email_sender', 'email_subject', 'email_body'),
         'mailer' => array('host', 'email', 'password'),
+        'other' => array('last_sent')
     );
 }
 
@@ -78,7 +82,7 @@ function getDataFormFields($name) {
             return array($nameArr[0] => array($nameArr[1]));
         }
     }
-    
+
     return $df;
 }
 

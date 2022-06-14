@@ -20,6 +20,8 @@ if (!configExists()) {
         echo confirm();
     } else if (!empty($_GET['system'])) {
         echo systemPage($_GET['system']);
+    } else if (!empty($_POST['system'])) {
+        echo systemAction($_POST['system']);
     } else {
         echo showDashboard();
     }

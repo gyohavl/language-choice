@@ -15,3 +15,7 @@ function updateTime(id) {
 		document.getElementById(id).value = '';
 	}
 }
+
+function bodyInsert(el) {
+	document.getElementById('text.email_body').value += el.textContent;
+}

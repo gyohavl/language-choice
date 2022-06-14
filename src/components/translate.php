@@ -32,7 +32,7 @@ function _t($group, $key) {
         'text' => array(
             'heading' => 'Texty',
             'client' => 'text nahoře na webu',
-            'email_sender' => 'odesílatel e-mailu',
+            'email_sender' => 'odesílatel e-mailu (jméno)',
             'email_subject' => 'předmět e-mailu',
             'email_body' => 'tělo e-mailu'
         ),
@@ -40,7 +40,11 @@ function _t($group, $key) {
             'heading' => 'Nastavení e-mailového serveru',
             'host' => 'adresa serveru (host)',
             'email' => 'e-mailová adresa',
-            'password' => 'heslo'
+            'password' => '<abbr title="je uloženo nezabezpečeně, lze ho zadat až při odesílání e-mailů">heslo (nepovinné)</abbr>'
+        ),
+        'other' => array(
+            'heading' => 'Ostatní',
+            'last_sent' => '<abbr title="generováno automaticky">naposledy odesláno</abbr>'
         ),
     );
 

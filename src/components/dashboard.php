@@ -5,11 +5,11 @@ function showDashboard() {
     <li><a href="?list=languages">jazyky</a></li>
     <li><a href="?list=data">další data</a></li>
     <li><a href="?system=state">stav systému</a></li>
+    <li><a href="?system=send">rozeslání e-mailů</a></li>
+    <li><a href="?system=export">export dat</a></li>
+    <li><a href="?system=wipe">možnosti smazání dat</a></li>
     </ul>';
     return adminTemplate($html);
-    // studenti
-    // jazyky
-    // čas spuštění a ukončení
     // text e-mailu
     // text nahoře na webu
     // export souboru
