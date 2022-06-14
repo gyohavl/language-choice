@@ -8,7 +8,7 @@ include(__DIR__ . '/components/list.php');
 include(__DIR__ . '/components/edit.php');
 include(__DIR__ . '/components/confirm.php');
 include(__DIR__ . '/components/system.php');
-include(__DIR__ . '/components/translate.php');
+include(__DIR__ . '/components/strings.php');
 include(__DIR__ . '/mailer/PHPMailer.php');
 include(__DIR__ . '/mailer/Exception.php');
 include(__DIR__ . '/mailer/SMTP.php');

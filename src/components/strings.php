@@ -22,6 +22,7 @@ function _t($group, $key) {
             'login' => 'Výborně! Byli jste přihlášeni.',
             'setup' => 'Výborně! Údaje byly nastaveny.',
             'tables' => 'Tabulky byly vytvořeny.',
+            'send-test' => 'Testovací e-mail byl odeslán.',
             'done' => 'Hotovo.'
         ),
         'time' => array(
