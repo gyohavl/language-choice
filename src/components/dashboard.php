@@ -4,6 +4,7 @@ function showDashboard() {
     <li><a href="?list=students">studenti</a></li>
     <li><a href="?list=languages">jazyky</a></li>
     <li><a href="?list=data">další data</a></li>
+    <li><a href="?system=state">stav systému</a></li>
     </ul>';
     return adminTemplate($html);
     // studenti

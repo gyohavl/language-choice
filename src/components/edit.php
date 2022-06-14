@@ -111,16 +111,21 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                 foreach ($catFields as $field) {
                     $fid = _field($category, $field);
                     $html .= '<tr><td><label for="' . $fid . '">' . _t($category, $field) . '</label></td><td>';
+                    $otherAttributes = '';
 
                     if ($category == 'time') {
-                        $html .= '<input type="date" onchange="console.log(this.value);">';
-                        $html .= '<input type="time" onchange="console.log(this.value);"><br>';
+                        $dv = getDataValue($fid);
+                        $datetime = $dv ? explode(' ', $dv, 2) : array('', '');
+                        $html .= '<input type="date" onchange="updateTime(\'' . $fid . '\');" id="' . $fid . 'd" value="' . $datetime[0] . '">';
+                        $html .= '<input type="time" onchange="updateTime(\'' . $fid . '\');" id="' . $fid . 't" value="' . $datetime[1] . '">';
+                        $html .= '<input type="button" value="propsat →" onclick="updateTime(\'' . $fid . '\');">';
+                        $otherAttributes = ' placeholder="výsledný čas"';
                     }
 
                     if ($field == 'email_body' || $field == 'client') {
                         $html .= '<textarea type="text" name="' . $fid . '" id="' . $fid . '">' . getDataValue($fid) . '</textarea>';
                     } else {
-                        $html .= '<input type="text" name="' . $fid . '" id="' . $fid . '" value="' . getDataValue($fid) . '">';
+                        $html .= '<input type="text" name="' . $fid . '" id="' . $fid . '" value="' . getDataValue($fid) . '" ' . $otherAttributes . '>';
                     }
 
                     $html .= '</td></tr>';
@@ -278,7 +283,6 @@ function editData($form) {
             break;
 
         default:
-            # code...
             break;
     }
 

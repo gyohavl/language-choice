@@ -36,7 +36,6 @@ function confirm() {
                 break;
 
             default:
-                # code...
                 break;
         }
 

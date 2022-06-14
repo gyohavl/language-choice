@@ -18,6 +18,8 @@ if (!configExists()) {
         echo editData($_POST['edit']);
     } else if (!empty($_GET['confirm']) || !empty($_POST['confirm'])) {
         echo confirm();
+    } else if (!empty($_GET['system'])) {
+        echo systemPage($_GET['system']);
     } else {
         echo showDashboard();
     }

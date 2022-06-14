@@ -7,6 +7,7 @@ include(__DIR__ . '/components/dashboard.php');
 include(__DIR__ . '/components/list.php');
 include(__DIR__ . '/components/edit.php');
 include(__DIR__ . '/components/confirm.php');
+include(__DIR__ . '/components/system.php');
 include(__DIR__ . '/components/translate.php');
 
 if (configExists()) {
