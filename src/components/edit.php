@@ -40,18 +40,20 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             $html .= '<table>';
 
             foreach ($textFields as $fieldName) {
+                $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form', $fieldName) . '</label></td>';
+
                 if ($fieldName == 'choice') {
-                    $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form', $fieldName) . '</label></td>
-                        <td>' . getLanguagesSelect(fillInput($formData, $fieldName)) . '</td></tr>';
+                    $html .= '<td>' . getLanguagesSelect(fillInput($formData, $fieldName)) . '</td></tr>';
+                } else if ($fieldName == 'class') {
+                    $html .= '<td>' . getClassesSelect(fillInput($formData, $fieldName)) . '</td></tr>';
                 } else {
-                    $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form', $fieldName) . '</label></td>
-                        <td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
+                    $html .= '<td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
                 }
             }
 
             $html .= '</table>';
             $html .= $formEnd;
-            // todo: styling, select boxes, key regeneration
+            // todo: styling, key regeneration
             break;
 
         case 'language':
@@ -82,13 +84,18 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             $html .= '<table>';
 
             foreach ($textFields as $fieldName) {
-                $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form-l', $fieldName) . '</label></td>
-                    <td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
+                $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form-l', $fieldName) . '</label></td>';
+
+                if ($fieldName == 'class') {
+                    $html .= '<td>' . getClassesSelect(fillInput($formData, $fieldName)) . '</td></tr>';
+                } else {
+                    $html .= '<td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
+                }
             }
 
             $html .= '</table>';
             $html .= $formEnd;
-            // todo: styling, select box
+            // todo: styling
             break;
 
         case 'data':

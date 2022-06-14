@@ -10,7 +10,7 @@ function _t($group, $key) {
         ),
         'form-l' => array(
             'name' => 'jazyk (název)',
-            'class' => 'pro třídu (' . implode('/', getClasses()) . ')',
+            'class' => 'pro třídu',
             'limit' => 'kapacita',
             'export' => 'označení pro export'
         ),

@@ -77,6 +77,19 @@ function isLanguageAvailable($class, $langId) {
     return getLanguageOccupancy($class, $langId) < $limit;
 }
 
+function getClassesSelect($chosen) {
+    $html = '';
+    $fieldName = 'class';
+
+    foreach (getClasses() as $class) {
+        $selected = $class === $chosen ? 'checked' : '';
+        $html .= '<input type="radio" name="' . $fieldName . '" id="' . $fieldName . $class . '" value="' . $class . '" ' . $selected . '>
+            <label for="' . $fieldName . $class . '">' . $class . '. třída</label><br>';
+    }
+
+    return $html;
+}
+
 function getDataValue($name) {
     $result = sql('SELECT `value` FROM `' . prefixTable('data') . '` WHERE `name`=?;', true, array($name));
     return isset($result[0]) && isset($result[0][0]) ? $result[0][0] : null;
