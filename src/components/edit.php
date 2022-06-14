@@ -40,8 +40,13 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             $html .= '<table>';
 
             foreach ($textFields as $fieldName) {
-                $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form', $fieldName) . '</label></td>
-                    <td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
+                if ($fieldName == 'choice') {
+                    $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form', $fieldName) . '</label></td>
+                        <td>' . getLanguagesSelect(fillInput($formData, $fieldName)) . '</td></tr>';
+                } else {
+                    $html .= '<tr><td><label for="' . $fieldName . '">' . _t('form', $fieldName) . '</label></td>
+                        <td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
+                }
             }
 
             $html .= '</table>';

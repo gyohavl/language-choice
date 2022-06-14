@@ -50,6 +50,21 @@ function getLanguagesTable() {
     return $html;
 }
 
+function getLanguagesSelect($chosen) {
+    $html = '<select name="choice" id="choice">';
+    $languagesTable = sql('SELECT * FROM `' . prefixTable('languages') . '`;');
+    $html .= '<option value="">(žádná)</option>';
+
+    foreach ($languagesTable as $row) {
+        $numberOfChoices = getLanguageOccupancy($row['class'], $row['id']);
+        $selected = $chosen === $row[0] ? 'selected' : '';
+        $html .= "<option value=\"$row[0]\" $selected>$row[1], $row[2]. třída ($numberOfChoices/$row[3])</option>";
+    }
+
+    $html .= '</select>';
+    return $html;
+}
+
 function getLanguageOccupancy($class, $langId) {
     $result = sql('SELECT COUNT(*) FROM `' . prefixTable('students') . '` WHERE `class`=? AND `choice`=?;', true, array($class, $langId));
     $number = isset($result[0]) && isset($result[0][0]) ? intval($result[0][0]) : 0;

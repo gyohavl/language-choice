@@ -32,7 +32,8 @@ return array(
 );
 ");
 
-                return adminTemplate('Výborně! Údaje byly nastaveny. <a href=".">Pokračovat do administrace…</a>');
+                // return adminTemplate('Výborně! Údaje byly nastaveny. <a href=".">Pokračovat do administrace…</a>');
+                redirectMessage('setup');
             }
 
             $formDisplayData['error'] = 'Nezadali jste všechna potřebná data.';
@@ -95,10 +96,11 @@ function showDbSetup() {
 
             fillDataTable();
 
-            return adminTemplate('Tabulky byly vytvořeny. <a href=".">Pokračovat do administrace…</a>');
+            // return adminTemplate('Tabulky byly vytvořeny. <a href=".">Pokračovat do administrace…</a>');
+            redirectMessage('tables');
         } else {
             return adminTemplate(
-                '<form method="post">Nyní dojde k vytvoření tabulek v databázi (jejich názvy jsou vypsány níže).<br>'
+                '<form method="post" action=".">Nyní dojde k vytvoření tabulek v databázi (jejich názvy jsou vypsány níže).<br>'
                     . 'Existující tabulky se stejným názvem budou smazány. <input type="submit" name="dbcreate" value="Souhlasím"></form>'
                     . '<code>' . prefixTable('students') . '<br>' . prefixTable('languages') . '<br>' . prefixTable('data') . '</code>'
             );

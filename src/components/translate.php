@@ -20,6 +20,8 @@ function _t($group, $key) {
         ),
         'success' => array(
             'login' => 'Výborně! Byli jste přihlášeni.',
+            'setup' => 'Výborně! Údaje byly nastaveny.',
+            'tables' => 'Tabulky byly vytvořeny.',
             'done' => 'Hotovo.'
         ),
         'time' => array(

@@ -22,6 +22,7 @@ function fillTemplate($name, $data) {
 
     if (is_array($data)) {
         foreach ($data as $key => $value) {
+            $value = ($value === null) ? '' : $value;
             $html = str_replace('{' . $key . '}', $value, $html);
         }
     } else {
