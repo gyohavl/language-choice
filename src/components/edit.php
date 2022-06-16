@@ -121,6 +121,8 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                         $html .= '<input type="time" onchange="updateTime(\'' . $fid . '\');" id="' . $fid . 't" value="' . $datetime[1] . '">';
                         $html .= '<input type="button" value="propsat →" onclick="updateTime(\'' . $fid . '\');">';
                         $otherAttributes = ' placeholder="RRRR-MM-DD hh:mm"';
+                    } else if ($field == 'password') {
+                        $otherAttributes = 'autocomplete="off"';
                     }
 
                     if ($field == 'email_body' || $field == 'client') {

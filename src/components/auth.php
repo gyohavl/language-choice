@@ -10,7 +10,7 @@ function showLoginForm() {
     $formDisplayData = array('error' => '');
 
     if (isset($_POST['adminpass'])) {
-        if ($config['adminpass'] == $_POST['adminpass']) {
+        if ($config['adminpass'] === $_POST['adminpass']) {
             $_SESSION['adminpass'] = password_hash($config['adminpass'], PASSWORD_DEFAULT);
             redirectMessage('login');
         }

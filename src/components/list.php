@@ -21,7 +21,7 @@ function showList($list) {
 }
 
 function getStudentsTable() {
-    $html = '<table><thead><tr>
+    $html = '<table class="bordered"><thead><tr>
     <th>id</th><th>spis. č.</th><th>e-mail</th><th>jméno</th><th>třída</th><th>vybraný jazyk</th><th>upravit</th><th>přihlašovací odkaz</th><th>klíč (pro kontrolu)</th>
     </tr></thead><tbody>';
     $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
@@ -29,7 +29,12 @@ function getStudentsTable() {
     $languagesArray = getLanguagesArray();
 
     foreach ($studentsTable as $row) {
-        $language = $row[6] ? $languagesArray[$row[6]] : '<i class="empty">(žádný)</i>';
+        if ($row[6]) {
+            $language = isset($languagesArray[$row[6]]) ? $languagesArray[$row[6]] : '<i class="empty">(neexistující jazyk č. ' . $row[6] . ')</i>';
+        } else {
+            $language = '<i class="empty">(žádný)</i>';
+        }
+
         $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[3]</td><td>$row[4]</td><td>$row[5]</td><td>$language</td><td><a href=\"?edit=student&id=$row[0]\">upravit</a></td><td><input type=\"text\" value=\"$linkPrefix$row[2]\" onclick=\"this.setSelectionRange(0, this.value.length)\" readonly></td><td>$row[2]</td></tr>";
     }
 
@@ -38,7 +43,7 @@ function getStudentsTable() {
 }
 
 function getLanguagesTable() {
-    $html = '<table><thead><tr>
+    $html = '<table class="bordered"><thead><tr>
     <th>id</th><th>jazyk</th><th>značka</th><th>třída</th><th>obsazeno/kapacita</th><th>upravit</th>
     </tr></thead><tbody>';
     $languagesTable = sql('SELECT * FROM `' . prefixTable('languages') . '`;');
@@ -56,6 +61,11 @@ function getLanguagesSelect($chosen) {
     $html = '<select name="choice" id="choice">';
     $languagesTable = sql('SELECT * FROM `' . prefixTable('languages') . '`;');
     $html .= '<option value="" style="font-style:italic">(žádná)</option>';
+    $languagesArray = getLanguagesArray();
+
+    if (!isset($languagesArray[$chosen])) {
+        $html .= '<option value="' . $chosen . '" style="font-style:italic" selected>(neexistující jazyk č. ' . $chosen . ')</option>';
+    }
 
     foreach ($languagesTable as $row) {
         $numberOfChoices = getLanguageOccupancy($row['class'], $row['id']);
@@ -121,7 +131,7 @@ function getDataTable() {
     $dataFields = getDataFields();
 
     foreach ($dataFields as $categoryName => $category) {
-        $html .= '<h2>' . _t($categoryName, 'heading') . ' <a href="?edit=data&name=' . $categoryName . '">(upravit)</a></h2><table><tbody>';
+        $html .= '<h2>' . _t($categoryName, 'heading') . ' <a href="?edit=data&name=' . $categoryName . '">(upravit)</a></h2><table class="bordered"><tbody>';
 
         foreach ($category as $fieldName) {
             $html .= '<tr><th>' . _t($categoryName, $fieldName) . '</th><td>'

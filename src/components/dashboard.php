@@ -22,6 +22,7 @@ function redirectMessage($message = 'done', $type = 'success', $url = '.') {
     $query = parse_url($url, PHP_URL_QUERY);
     $separator = $query ? '&' : '?';
     header("Location: $url$separator$type=$message");
+    exit;
 }
 
 function getInfoMessage() {
