@@ -77,12 +77,12 @@ function getLanguagesSelect($chosen) {
     return $html;
 }
 
-function getLanguagesArray() {
+function getLanguagesArray($export = false) {
     $languagesTable = sql('SELECT * FROM `' . prefixTable('languages') . '`;');
     $retArr = array();
 
     foreach ($languagesTable as $row) {
-        $retArr[$row[0]] = "$row[1] [$row[2]]";
+        $retArr[$row[0]] = $export ? $row['export'] : "$row[1] [$row[2]]";
     }
 
     return $retArr;

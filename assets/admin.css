@@ -2,7 +2,7 @@ th {
     text-align: left;
 }
 
-th label {
+th label, td label {
     padding-right: 1rem;
 }
 
@@ -25,7 +25,7 @@ textarea {
     height: 150px;
 }
 
-textarea[name="import-csv"] {
+textarea[name="import-csv"], textarea.export {
     height: 400px;
 }
 

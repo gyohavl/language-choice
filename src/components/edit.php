@@ -9,7 +9,7 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
     switch ($form) {
         case 'import-students':
             $formName = 'Importovat seznam studentů';
-            $html = '<p>Formát: <code>spisové číslo,e-mail,celé jméno,třída (5/9)</code></p>'
+            $html = '<p><a href="?list=students">zpět</a></p><p>Formát: <code>spisové číslo,e-mail,celé jméno,třída (' . implode('/', getClasses()) . ')</code></p>'
                 . $formBegin . '<textarea name="import-csv">' . fillInput($fill, 'import-csv') . '</textarea><br>' . $formEnd;
             break;
 

@@ -140,9 +140,25 @@ function systemPage($view) {
 
         echo '<p>Skvěle, test proběhl v pořádku!</p>';
         echo $pageParts[1];
+        return '';
     } else if ($view == 'export') {
+        $html = '<h1>Exportovat data o studentech</h1><p><a href=".">zpět</a></p>';
+        $html .= '<p>Formát: <code>spisové číslo,e-mail,celé jméno,třída (' . implode('/', getClasses()) . '),vybraný jazyk (značka)</code></p>';
+        $data = '';
+        $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
+        $languagesArray = getLanguagesArray(true);
+        foreach ($studentsTable as $row) {
+            if ($row[6]) {
+                $language = isset($languagesArray[$row[6]]) ? $languagesArray[$row[6]] : "($row[6])";
+            } else {
+                $language = '';
+            }
+
+            $data .= "$row[1],$row[3],$row[4],$row[5],$language\n";
+        }
+        $html .= '<textarea class="export" readonly>' . $data . '</textarea>';
+        return adminTemplate($html);
         // ošetřit neexistující jazyk
-        header('Content-Type: text/plain');
     } else if ($view == 'wipe') {
     }
 }
