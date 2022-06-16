@@ -45,7 +45,8 @@ function _t($group, $key) {
         ),
         'other' => array(
             'heading' => 'Ostatní',
-            'last_sent' => '<abbr title="generováno automaticky">naposledy odesláno</abbr>'
+            'last_sent' => '<abbr title="generováno automaticky">naposledy odesláno</abbr>',
+            'skipped_ids' => '<abbr title="generováno automaticky">přeskočené identifikátory</abbr>'
         ),
     );
 

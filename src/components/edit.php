@@ -104,7 +104,7 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             $html = $formBegin;
             $name = isset($_GET['name']) ? $_GET['name'] : (isset($_POST['name']) ? $_POST['name'] : 'none');
             $fields = getDataFormFields($name);
-            $html .= '<p><a href="' . (!empty($_GET['from']) ? '?' . str_replace('_', '=', $_GET['from']) : '?list=data') . '">zpět</a></p>';
+            $html .= '<p><a href="' . (!empty($_GET['from']) ? '?' . str_replace(['_', '!'], ['=', '&'], $_GET['from']) : '?list=data') . '">zpět</a></p>';
             $html .= '<input type="hidden" name="name" value="' . $name . '">';
             $html .= '<table>';
 
@@ -316,7 +316,7 @@ function editData($form) {
     }
 
     if (!empty($_POST['from'])) {
-        $successLink = '?' . str_replace('_', '=', $_POST['from']);
+        $successLink = '?' . str_replace(['_', '!'], ['=', '&'], $_POST['from']);
     }
 
     redirectMessage($successText, 'success', $successLink);
@@ -340,6 +340,11 @@ function validateLine($line) {
     }
 
     return array(false, null, $errorMessage);
+}
+
+function setDataValue($name, $value) {
+    $query = 'UPDATE `' . prefixTable('data') . '` SET `value`=? WHERE `name`=?;';
+    sql($query, false, array($value, $name));
 }
 
 function createUniqueKey() {

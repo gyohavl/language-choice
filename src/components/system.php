@@ -71,13 +71,14 @@ function systemPage($view) {
 
         if ($isTest) {
             $html .= '<b>odeslání testovacího e-mailu</b> | <a href="?system=send-real">odeslání ostrého e-mailu</a> | <a href="?system=send-real&send-fix=1">opravit ostré odeslání</a>';
-        } else if($isFix) {
+        } else if ($isFix) {
             $html .= '<a href="?system=send-test">odeslání testovacího e-mailu</a> | <a href="?system=send-real">odeslání ostrého e-mailu</a> | <b>opravit ostré odeslání</b>';
         } else {
             $html .= '<a href="?system=send-test">odeslání testovacího e-mailu</a> | <b>odeslání ostrého e-mailu</b> | <a href="?system=send-real&send-fix=1">opravit ostré odeslání</a>';
         }
 
         $html .= '</p>';
+        $html .= $isFix ? '<p>Tuto stránku použijte pouze v případě, kdy selže odeslání ostrého e-mailu a e-maily se odešlou jen na některé adresy. </p>' : '';
         $html .= '<h2>' . _t('mailer', 'heading') . ' <a href="?edit=data&name=mailer&from=system_' . $view . '">(upravit)</a></h2><table>';
         $placeholder = '<i>(chybí!)</i>';
         $fields = array('host', 'email', 'password');
@@ -102,20 +103,46 @@ function systemPage($view) {
         $html .= '<tr><th>' . _t('text', 'email_body') . ' (náhled)</th><td>' . ($value ? $value : $placeholder) . '</td></tr></table>';
         $html .= $isTest
             ? '<h2>Odeslání testovacího e-mailu (jednomu adresátovi)</h2><table><form method="post" action="."><input type="hidden" name="system" value="send-test">'
-            : '<h2>Odeslání ostrého e-mailu (všem adresátům) 🟡</h2><table><form method="post" action="."><input type="hidden" name="system" value="send-real">';
+            : ('<h2>Odeslání ostrého e-mailu (' . ($isFix ? 'vybraným adresátům' : 'všem adresátům') . ') 🟡</h2><table><form method="post" action="."><input type="hidden" name="system" value="send-real">');
+        $html .= $isFix ? '<input type="hidden" name="fix" value="1">' : '';
 
         if (!getDataValue('mailer.password')) {
             $html .= '<tr><th><label for="password">heslo (k e-mailu)</label></th><td><input type="text" name="password" id="password" autocomplete="off" required></td></tr>';
         }
 
+        $disabled = $isFix && !getDataValue('other.skipped_ids') ? 'disabled' : '';
+        $value = $disabled ? null : htmlspecialchars(implode(', ', getListOfEmails($isFix)));
         $html .= $isTest
-            ? '<tr><th><label for="test_address">adresát testovacího e-mailu</label></th><td><input type="text" name="test_address" id="test_address" required></td></tr>'
+            ? ('<tr><th><label for="test_address">adresát testovacího e-mailu</label></th><td><input type="text" name="test_address" id="test_address" required></td></tr>'
+                . '<tr><th><label for="test_count"><abbr title="vyšší počty používejte pouze u testovacích adres – kvůli spamovým filtrům (rovněž k odesílání použijte testovací server)">'
+                . 'počet kopií test. e-mailu</abbr></label></th><td><input type="number" name="test_count" id="test_count" value="1" required></td></tr>')
             : ('<tr><th><label for="adminpass"><abbr title="heslo pro přístup do této administrace">admin. heslo</abbr></label></th><td><input type="password" name="adminpass" id="adminpass" required></td></tr>'
-                . '<tr><th>seznam adresátů</th><td>' . htmlspecialchars(implode(', ', getListOfEmails())) . '</td></tr>');
-        $html .= '</table><br><input type="submit" value="Odeslat ' . ($isTest ? 'testovací' : 'ostrý') . ' e-mail"></form>';
+                . '<tr><th>seznam adresátů</th><td>' . ($value ? $value : $placeholder) . '</td></tr>');
+        $html .= $isFix ? '<tr><td></td><td><a href="?edit=data&name=other.skipped_ids&from=system_send-real!send-fix_1">upravit seznam adresátů</a> (do textového pole patří ID studentů oddělená čárkou)</td></tr>' : '';
+        $html .= '</table><br><input type="submit" value="Odeslat ' . ($isTest ? 'testovací' : 'ostrý') . ' e-mail" ' . $disabled . '></form>';
+        $html .= $isTest ? ' | <a href="?system=test-timeout">otestovat timeout</a>' : '';
         return adminTemplate($html);
+    } else if ($view == 'test-timeout') {
+        $pageParts = explode('#separator#', adminTemplate('#separator#'), 2);
+        @ob_end_clean();
+        header('Content-Type: text/html; charset=utf-8');
+        echo $pageParts[0];
+        echo '<p><a href="?system=send-test">zpět</a></p>';
+        echo '<p>Odesílání e-mailů může zabrat až dvě minuty. Tato stránka slouží k vyzkoušení, zda je server i klient konfigurován tak, aby tuto dobu zvládl. Cílem je, aby se níže objevila číslice 120.</p>';
+        flush();
+        $limit = 120;
+
+        for ($i = 0; $i < $limit; $i++) {
+            echo $i + 1 . ' ';
+            sleep(1);
+            flush();
+        }
+
+        echo '<p>Skvěle, test proběhl v pořádku!</p>';
+        echo $pageParts[1];
     } else if ($view == 'export') {
         // ošetřit neexistující jazyk
+        header('Content-Type: text/plain');
     } else if ($view == 'wipe') {
     }
 }
@@ -134,35 +161,53 @@ function systemAction($action) {
 
     if ($action == 'send-test') {
         $testAddress = !empty($_POST['test_address']) ? $_POST['test_address'] : null;
+        $testCount = !empty($_POST['test_count']) ? $_POST['test_count'] : 1;
+        $testCount = ($testCount < 1) ? 1 : $testCount;
+        $testCount = ($testCount > 100) ? 100 : $testCount;
 
         if ($sender && $generalBody && $subject && $host && $email && $password && $testAddress) {
-            $mailingList = array(getEmailDummyData($testAddress));
+            $mailingList = array();
+
+            for ($i = 0; $i < $testCount; $i++) {
+                $sid = $i + 1;
+
+                if ($testCount == 1) {
+                    $sid = 123;
+                }
+
+                $mailingList[] = getEmailDummyData($testAddress, $sid);
+            }
+
             return mailer($host, $email, $password, $sender, $subject, $generalBody, $mailingList, true);
         } else {
             return adminTemplate('Chyba: některé údaje nebyly vyplněny. <a href="?system=send-test">Zpět k odeslání testovacího e-mailu</a>');
         }
     } else if ($action == 'send-real') {
         $adminPass = isset($_POST['adminpass']) ? $_POST['adminpass'] : null;
-        $mailingList = sql('SELECT * FROM `' . prefixTable('students') . '`;');
+        $isFix = !empty($_POST['fix']);
+        $button = $isFix ? '<a href="?system=send-real&send-fix=1">Zpět k opravě odeslání ostrého e-mailu</a>' : '<a href="?system=send-real">Zpět k odeslání ostrého e-mailu</a>';
+
+        if ($isFix) {
+            $skippedIds = getDataValue('other.skipped_ids');
+            $mailingList = $skippedIds ? sql('SELECT * FROM `' . prefixTable('students') . '` WHERE `id` IN (' . $skippedIds . ');') : null;
+        } else {
+            $mailingList = sql('SELECT * FROM `' . prefixTable('students') . '`;');
+        }
 
         if ($sender && $generalBody && $subject && $host && $email && $password && !empty($mailingList) && $adminPass) {
             if ($config['adminpass'] === $adminPass) {
                 return mailer($host, $email, $password, $sender, $subject, $generalBody, $mailingList, false);
             } else {
-                return adminTemplate('Chyba: zadali jste špatné heslo administrátora (jde o heslo, které jste použili pro přístup do této administrace). <a href="?system=send-real">Zpět k odeslání ostrého e-mailu</a>');
+                return adminTemplate('Chyba: zadali jste špatné heslo administrátora (jde o heslo, které jste použili pro přístup do této administrace). ' . $button);
             }
-            // https://github.com/PHPMailer/PHPMailer/wiki/Sending-to-lists
-            // generovat seznam adres, na které byl e-mail odeslán
-            // evidovat čas odeslání
-            // ošetřit jednu neplatnou adresu nebo něco podobného
         } else {
-            return adminTemplate('Chyba: některé údaje nebyly vyplněny. <a href="?system=send-real">Zpět k odeslání ostrého e-mailu</a>');
+            return adminTemplate('Chyba: některé údaje nebyly vyplněny. ' . $button);
         }
     }
 }
 
-function getEmailDummyData($email = '') {
-    return array('id' => 0, 'email' => $email, 'key' => 'asdfghjkl12345', 'sid' => 123, 'name' => 'Jan Novák', 'class' => 5);
+function getEmailDummyData($email = '', $sid = 123) {
+    return array('id' => 0, 'email' => $email, 'key' => 'asdfghjkl12345', 'sid' => $sid, 'name' => 'Jan Novák', 'class' => 5);
 }
 
 function getEmailBody($generalBody, $recipient, $forEmail = true) {
@@ -178,8 +223,10 @@ function getEmailBody($generalBody, $recipient, $forEmail = true) {
     return $body;
 }
 
-function getListOfEmails() {
-    $emailTable = sql('SELECT `email` FROM `' . prefixTable('students') . '`;');
+function getListOfEmails($isFix) {
+    $emailTable = $isFix
+        ? sql('SELECT `email` FROM `' . prefixTable('students') . '` WHERE `id` IN (' . getDataValue('other.skipped_ids') . ');')
+        : sql('SELECT `email` FROM `' . prefixTable('students') . '`;');
     return array_column($emailTable, 'email');
 }
 
@@ -190,14 +237,19 @@ function mailer($host, $email, $password, $sender, $subject, $generalBody, $mail
     $total = count($mailingList);
     $successful = 0;
     $letter = $total === 1 ? 'u' : 'ů';
-    $html = '<p>Probíhá odesílání ' . $total . ' e-mail' . $letter . '…</p>';
-    $html .= '<table class="bordered"><tr><th>id</th><th>jméno</th><th>e-mail</th><th>výsledek</th></tr>';
+    $pageParts = explode('#separator#', adminTemplate('#separator#'), 2);
+    @ob_end_clean();
+    header('Content-Type: text/html; charset=utf-8');
+    echo $pageParts[0];
+    echo '<p>Probíhá odesílání ' . $total . ' e-mail' . $letter . '… (Počkejte, až se dokončí načítání stránky.)</p>';
+    echo '<table class="bordered"><tr><th>pořadí</th><th>id</th><th>jméno</th><th>e-mail</th><th>výsledek</th></tr>';
 
     try {
         // Server settings
         $mail->isSMTP();                                            // Send using SMTP
         $mail->Host       = $host;                                  // Set the SMTP server to send through
         $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+        $mail->SMTPKeepAlive = true;                                // https://github.com/PHPMailer/PHPMailer/wiki/Sending-to-lists
         $mail->Username   = $email;                                 // SMTP username
         $mail->Password   = $password;                              // SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            // Enable implicit TLS encryption
@@ -207,14 +259,14 @@ function mailer($host, $email, $password, $sender, $subject, $generalBody, $mail
         $mail->setFrom($email, $sender);
         $mail->Subject = $subject;
 
-        foreach ($mailingList as $recipient) {
-            $html .= '<tr><td>' . $recipient['id'] . '</td><td>' . $recipient['name'] . '</td><td>' . $recipient['email'] . '</td><td>';
+        foreach ($mailingList as $no => $recipient) {
+            flush();
+            echo '<tr><td>' . ($no + 1) . '/' . $total . '</td><td>' . $recipient['id'] . '</td><td>' . $recipient['name'] . '</td><td>' . $recipient['email'] . '</td><td>';
 
             try {
                 $mail->addAddress($recipient['email']);
             } catch (Exception $e) {
-                // $skippedIds[] = $recipient['id'];
-                $html .= '🔴 e-mail nebyl odeslán, špatná adresa</td></tr>';
+                echo '🔴 e-mail nebyl odeslán, špatná adresa</td></tr>';
                 $mail->clearAddresses();
                 continue;
             }
@@ -223,22 +275,22 @@ function mailer($host, $email, $password, $sender, $subject, $generalBody, $mail
                 $mail->Body = getEmailBody($generalBody, $recipient);
                 $mail->send();
             } catch (Exception $e) {
-                // $skippedIds[] = $recipient['id'];
-                $html .= '🔴 e-mail nebyl odeslán, chyba odesílání: ' . translateErrorMessage($mail->ErrorInfo) . ' / ' . $mail->ErrorInfo . '</td></tr>';
+                echo '🔴 e-mail nebyl odeslán, chyba odesílání: ' . translateErrorMessage($mail->ErrorInfo) . ' / ' . $mail->ErrorInfo . '</td></tr>';
                 $mail->clearAddresses();
+                $mail->getSMTPInstance()->reset();
                 continue;
             }
 
-            $html .= '🟢 e-mail byl úspěšně odeslán</td></tr>';
+            echo '🟢 e-mail byl úspěšně odeslán</td></tr>';
             $successful++;
             $successfulIds[] = $recipient['id'];
             $mail->clearAddresses();
         }
     } catch (Exception $e) {
-        $html .= '<tr><td>Chyba</td><td>' . translateErrorMessage($mail->ErrorInfo) . '</td><td>' . $mail->ErrorInfo . '</td></tr>';
+        echo '<tr><td colspan="2">🔴 chyba</td><td>' . translateErrorMessage($mail->ErrorInfo) . '</td><td>' . $mail->ErrorInfo . '</td></tr>';
     }
 
-    $html .= '</table>';
+    echo '</table>';
 
     if ($isTest) {
         if ($successful) {
@@ -247,27 +299,28 @@ function mailer($host, $email, $password, $sender, $subject, $generalBody, $mail
             $result = 'Testovací e-mail nebyl odeslán. <a href="?system=send-test">Zpět k odeslání testovacího e-mailu…</a>';
         }
     } else {
-        $allIds = array_column($mailingList, 'id');
-        $skippedIds = array_diff($allIds, $successfulIds);
+        $currentTime = new DateTime('now');
 
         if ($successful == 1) {
             $result = 'Ostrý e-mail nebyl odeslán nikomu, zkuste znovu odeslat testovací e-mail. <a href="?system=send-test">Zpět k odeslání <b>testovacího</b> e-mailu…</a>';
         } else if ($successful === $total) {
             $result = 'Ostrý e-mail byl úspěšně odeslán na všechny zadané e-mailové adresy. Výborně! <a href=".">Pokračovat zpět do administrace…</a>';
+            setDataValue('other.last_sent', $currentTime->format('j. n. Y \v G:i'));
+            setDataValue('other.skipped_ids', '');
         } else {
+            $allIds = array_column($mailingList, 'id');
+            $skippedIds = array_diff($allIds, $successfulIds);
             $result = 'Ostrý e-mail byl odeslán pouze na ' . $successful . ' z ' . $total . ' e-mailových adres.</p><p>Identifikátory studentů jimž nebyl odeslán e-mail: '
                 . implode(',', $skippedIds) . '</p><p>Identifikátory byly uloženy do databáze. Jakmile zjistíte, kde je chyba, a opravíte ji, použijte odkaz <i>opravit ostré odeslání</i>, který najdete nahoře na stránce <i>rozeslání e-mailů</i>.</p>'
                 . '<p>Nyní můžete <a href="?list=students">pokračovat na tabulku studentů…</a>';
+            setDataValue('other.last_sent', $currentTime->format('j. n. Y \v G:i'));
+            setDataValue('other.skipped_ids', implode(',', $skippedIds));
         }
     }
 
-    // implementovat keep alive
-    // uložit datum odeslání
-    // implementovat opravdu odeslaného ostrého e-mailu
-
-    // $html .= '<p>Odesílání bylo dokončeno. Bylo odesláno ' . $successful . ' z ' . $total . ' e-mailů. <a href=".">Pokračovat zpět do administrace…</a></p>';
-    $html .= "<p>$result</p>";
-    return adminTemplate($html);
+    echo "<p>$result</p>";
+    echo $pageParts[1];
+    return '';
 }
 
 function translateErrorMessage($errorInfo) {

@@ -45,7 +45,7 @@ function getDataFields() {
         'time' => array('from', 'to'),
         'text' => array('client', 'email_sender', 'email_subject', 'email_body'),
         'mailer' => array('host', 'email', 'password'),
-        'other' => array('last_sent')
+        'other' => array('last_sent', 'skipped_ids')
     );
 }
 
