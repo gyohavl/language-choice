@@ -126,6 +126,10 @@ function getDataTable() {
 
     foreach ($result as $row) {
         $resultData[$row['name']] = $row['value'] ? $row['value'] : '<i class="empty">(prázdné)</i>';
+
+        if ($row['name'] == 'choice.confirmation_send' || $row['name'] == 'choice.allow_change') {
+            $resultData[$row['name']] = $row['value'] ? 'ano' : 'ne';
+        }
     }
 
     $dataFields = getDataFields();

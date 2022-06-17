@@ -2,7 +2,7 @@
 function showEditForm($form, $fill = null, $errorMessage = '') {
     $formBegin = '<form method="post" action=".">';
     $formEnd = '<input type="hidden" name="edit" value="' . $form . '"><input type="hidden" name="from" value="' . (!empty($_GET['from']) ? $_GET['from'] : '') . '">'
-        . '<input type="submit" value="Odeslat"></form>';
+        . '<input type="submit" value="Uložit"></form>';
     $formName = '';
     $html = '';
 
@@ -109,6 +109,8 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             $html .= '<table>';
 
             foreach ($fields as $category => $catFields) {
+                $html .= '<tr><th colspan="2">' . _t($category, 'heading') . '</th>';
+
                 foreach ($catFields as $field) {
                     $fid = _field($category, $field);
                     $html .= '<tr><td><label for="' . $fid . '">' . _t($category, $field) . '</label></td><td>';
@@ -125,16 +127,22 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                         $otherAttributes = 'autocomplete="off"';
                     }
 
-                    if ($field == 'email_body' || $field == 'client') {
+                    if ($field == 'client' || $field == 'email_body' || $field == 'confirmation_body') {
                         $html .= '<textarea type="text" name="' . $fid . '" id="' . $fid . '">' . getDataValue($fid) . '</textarea>';
+                    } else if ($field == 'confirmation_send' || $field == 'allow_change') {
+                        $otherAttributes = getDataValue($fid) ? 'checked' : '';
+                        $html .= '<input type="checkbox" name="' . $fid . '" id="' . $fid . '" value="1" ' . $otherAttributes . '>';
                     } else {
                         $html .= '<input type="text" name="' . $fid . '" id="' . $fid . '" value="' . getDataValue($fid) . '" ' . $otherAttributes . '>';
                     }
 
-                    if ($field == 'email_body') {
-                        $html .= 'povolené proměnné: <span onclick="bodyInsert(this);">(odkaz)</span>,
-                        <span onclick="bodyInsert(this);" title="spisové číslo">(spisc)</span>, <span onclick="bodyInsert(this);">(jmeno)</span>,
-                        <span onclick="bodyInsert(this);">(trida)</span>';
+                    if ($field == 'email_body' || $field == 'confirmation_body') {
+                        $onclick = 'onclick="bodyInsert(this, \'' . $fid . '\');"';
+                        $html .= 'povolené proměnné: ';
+                        $html .= $field == 'confirmation_body' ? '<span ' . $onclick . ' title="vybraný jazyk">(volba)</span>, ' : '';
+                        $html .= '<span ' . $onclick . '>(odkaz)</span>,
+                        <span ' . $onclick . ' title="spisové číslo">(spisc)</span>, <span ' . $onclick . '>(jmeno)</span>,
+                        <span ' . $onclick . '>(trida)</span>';
                     }
 
                     $html .= '</td></tr>';

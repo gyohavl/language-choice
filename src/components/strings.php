@@ -34,8 +34,15 @@ function _t($group, $key) {
             'heading' => 'Texty',
             'client' => 'text nahoře na webu',
             'email_sender' => 'odesílatel e-mailu (jméno)',
-            'email_subject' => 'předmět e-mailu',
-            'email_body' => 'tělo e-mailu'
+            'email_subject' => 'předmět úvodního e-mailu',
+            'email_body' => 'tělo úvodního e-mailu'
+        ),
+        'choice' => array(
+            'heading' => 'Nastavení výběru jazyka',
+            'confirmation_send' => 'zasílat potvrzovací e-mail?',
+            'confirmation_subject' => 'předmět potvrzovacího e-mailu',
+            'confirmation_body' => 'tělo potvrzovacího e-mailu',
+            'allow_change' => 'umožnit dodatečnou změnu vybraného jazyka?'
         ),
         'mailer' => array(
             'heading' => 'Nastavení e-mailového serveru',
@@ -43,10 +50,10 @@ function _t($group, $key) {
             'email' => 'e-mailová adresa',
             'password' => '<abbr title="je uloženo nezabezpečeně, lze ho zadat až při odesílání e-mailů">heslo (nepovinné)</abbr>'
         ),
-        'other' => array(
-            'heading' => 'Ostatní',
-            'last_sent' => '<abbr title="generováno automaticky">naposledy odesláno</abbr>',
-            'skipped_ids' => '<abbr title="generováno automaticky">přeskočené identifikátory</abbr>'
+        'generated' => array(
+            'heading' => 'Generováno automaticky',
+            'last_sent' => 'naposledy odesláno</abbr>',
+            'skipped_ids' => 'přeskočené identifikátory'
         ),
     );
 

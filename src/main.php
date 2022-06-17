@@ -44,8 +44,9 @@ function getDataFields() {
     return array(
         'time' => array('from', 'to'),
         'text' => array('client', 'email_sender', 'email_subject', 'email_body'),
+        'choice' => array('confirmation_send', 'confirmation_subject', 'confirmation_body', 'allow_change'),
         'mailer' => array('host', 'email', 'password'),
-        'other' => array('last_sent', 'skipped_ids')
+        'generated' => array('last_sent', 'skipped_ids')
     );
 }
 

@@ -51,20 +51,21 @@ function systemPage($view) {
             $html .= ' <a href="?edit=data&name=time.' . $fromTo . '&from=system_state">(upravit)</a></li>';
         }
 
-        $mlrl = getDataValue('other.last_sent');
+        $mlrl = getDataValue('generated.last_sent');
         $html .= $mlrl ? '<li>hromadný e-mail byl odeslán ' . $mlrl . ' 🟢</li>' : '<li>hromadný e-mail zatím nebyl odeslán 🟡 <a href="?system=send-test">(nastavit odeslání)</a></li>';
 
         $result = sql('SELECT COUNT(*) FROM `' . prefixTable('students') . '` WHERE `choice` IS NULL', true);
         $number = isset($result[0]) && isset($result[0][0]) ? intval($result[0][0]) : 0;
         $html .= $number ? '<li>ještě ' . $number . ' studentů nemá zvolený jazyk 🟡</li>' : '<li>všichni studenti mají zvolený jazyk 🟢</li>';
         // $html .= '<li><a href="">zobrazit náhled aktuálního stavu uživatelské části webu</a></li>';
+        // $html .= '<li><a href="">zobrazit náhled potvrzovacího e-mailu ZOBRAZIT STAV (JESTLI SE ODEŠLE, NEBO NE)</a></li>';
         $html .= '</ul>';
         return adminTemplate($html);
     } else if ($view == 'send-test' || $view == 'send-real') {
         $isTest = $view == 'send-test';
         $isFix = isset($_GET['send-fix']) && $_GET['send-fix'];
-        $html = '<h1>Hromadné rozeslání e-mailů</h1>';
-        $mlrl = getDataValue('other.last_sent');
+        $html = '<h1>Hromadné rozeslání úvodního e-mailu</h1>';
+        $mlrl = getDataValue('generated.last_sent');
         $html .= '<p><a href=".">zpět</a>';
         $html .= $mlrl ? ' | <i>pozor, hromadný e-mail již byl odeslán (' . $mlrl . ')</i> 🟡' : ' | hromadný e-mail zatím nebyl odeslán 🟢';
         $html .= '</p><p>menu: ';
@@ -110,7 +111,7 @@ function systemPage($view) {
             $html .= '<tr><th><label for="password">heslo (k e-mailu)</label></th><td><input type="text" name="password" id="password" autocomplete="off" required></td></tr>';
         }
 
-        $disabled = $isFix && !getDataValue('other.skipped_ids') ? 'disabled' : '';
+        $disabled = $isFix && !getDataValue('generated.skipped_ids') ? 'disabled' : '';
         $value = $disabled ? null : htmlspecialchars(implode(', ', getListOfEmails($isFix)));
         $html .= $isTest
             ? ('<tr><th><label for="test_address">adresát testovacího e-mailu</label></th><td><input type="text" name="test_address" id="test_address" required></td></tr>'
@@ -118,7 +119,7 @@ function systemPage($view) {
                 . 'počet kopií test. e-mailu</abbr></label></th><td><input type="number" name="test_count" id="test_count" value="1" required></td></tr>')
             : ('<tr><th><label for="adminpass"><abbr title="heslo pro přístup do této administrace">admin. heslo</abbr></label></th><td><input type="password" name="adminpass" id="adminpass" required></td></tr>'
                 . '<tr><th>seznam adresátů</th><td>' . ($value ? $value : $placeholder) . '</td></tr>');
-        $html .= $isFix ? '<tr><td></td><td><a href="?edit=data&name=other.skipped_ids&from=system_send-real!send-fix_1">upravit seznam adresátů</a> (do textového pole patří ID studentů oddělená čárkou)</td></tr>' : '';
+        $html .= $isFix ? '<tr><td></td><td><a href="?edit=data&name=generated.skipped_ids&from=system_send-real!send-fix_1">upravit seznam adresátů</a> (do textového pole patří ID studentů oddělená čárkou)</td></tr>' : '';
         $html .= '</table><br><input type="submit" value="Odeslat ' . ($isTest ? 'testovací' : 'ostrý') . ' e-mail" ' . $disabled . '></form>';
         $html .= $isTest ? ' | <a href="?system=test-timeout">otestovat timeout</a>' : '';
         return adminTemplate($html);
@@ -141,12 +142,11 @@ function systemPage($view) {
         echo '<p>Skvěle, test proběhl v pořádku!</p>';
         echo $pageParts[1];
         return '';
-    } else if ($view == 'export') {
-        $html = '<h1>Exportovat data o studentech</h1><p><a href=".">zpět</a></p>';
-        $html .= '<p>Formát: <code>spisové číslo,e-mail,celé jméno,třída (' . implode('/', getClasses()) . '),vybraný jazyk (značka)</code></p>';
-        $data = '';
+    } else if ($view == 'export' || $view == 'export-csv') {
+        $data = "spisc,e-mail,jmeno,trida,volba\r\n";
         $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
         $languagesArray = getLanguagesArray(true);
+
         foreach ($studentsTable as $row) {
             if ($row[6]) {
                 $language = isset($languagesArray[$row[6]]) ? $languagesArray[$row[6]] : "($row[6])";
@@ -154,12 +154,43 @@ function systemPage($view) {
                 $language = '';
             }
 
-            $data .= "$row[1],$row[3],$row[4],$row[5],$language\n";
+            $data .= "$row[1],$row[3],$row[4],$row[5],$language\r\n";
         }
+
+        if ($view == 'export-csv') {
+            header('Content-Type: text/csv; header=present; charset=utf-8');
+            return $data;
+        }
+
+        $html = '<h1>Exportovat data o studentech</h1><p><a href=".">zpět</a> | <a href="?system=export-csv" download="studenti.csv">stáhnout CSV soubor</a></p>';
+        $html .= '<p>Formát: <code>spisové číslo,e-mail,celé jméno,třída (' . implode('/', getClasses()) . '),vybraný jazyk (značka)</code></p>';
         $html .= '<textarea class="export" readonly>' . $data . '</textarea>';
         return adminTemplate($html);
-        // ošetřit neexistující jazyk
     } else if ($view == 'wipe') {
+        // dodělat vymazání dat, reset klíče v případě odcizení a klientský pohled (a e-mail)
+        /*
+            1. fáze
+                import dat o studentech
+                přidání jazyků
+                nastavení času spuštění a ukončení
+                nastavení textů
+                nastavení výběru jazyka
+                nastavení e-mailového serveru
+            2. fáze
+                kontrola nastavení pomocí nástroje *stav systému*
+                kontrola uživatelské části webu a potvrzovacího e-mailu (upozornit, že potvrzovací e-mail vyžaduje uložení hesla)
+                otestování timeoutu (na stránce odeslání testovacího e-mailu)
+                odeslání testovacího úvodního e-mailu
+            3. fáze (v dostatečném předstihu před spuštěním)
+                informování studentů/rodičů o odeslání e-mailu pomocí postranních kanálů (web školy, obecný e-mail – ideálně z jiné e-mailové adresy)
+                odeslání ostrého úvodního e-mailu
+            4. fáze (po ukončení)
+                kontaktování studentů, kteří si nezvolili jazyk, a doplnění jejich volby (nebo lze volbu rovnou přiřadit, pokud zbyla pouze jedna možnost)
+            5. fáze
+                export dat o studentech
+            6. fáze
+                vymazání dat o studentech, časů a automaticky generovaných dat / vymazání všech uložených dat
+        */
     }
 }
 
@@ -204,7 +235,7 @@ function systemAction($action) {
         $button = $isFix ? '<a href="?system=send-real&send-fix=1">Zpět k opravě odeslání ostrého e-mailu</a>' : '<a href="?system=send-real">Zpět k odeslání ostrého e-mailu</a>';
 
         if ($isFix) {
-            $skippedIds = getDataValue('other.skipped_ids');
+            $skippedIds = getDataValue('generated.skipped_ids');
             $mailingList = $skippedIds ? sql('SELECT * FROM `' . prefixTable('students') . '` WHERE `id` IN (' . $skippedIds . ');') : null;
         } else {
             $mailingList = sql('SELECT * FROM `' . prefixTable('students') . '`;');
@@ -241,7 +272,7 @@ function getEmailBody($generalBody, $recipient, $forEmail = true) {
 
 function getListOfEmails($isFix) {
     $emailTable = $isFix
-        ? sql('SELECT `email` FROM `' . prefixTable('students') . '` WHERE `id` IN (' . getDataValue('other.skipped_ids') . ');')
+        ? sql('SELECT `email` FROM `' . prefixTable('students') . '` WHERE `id` IN (' . getDataValue('generated.skipped_ids') . ');')
         : sql('SELECT `email` FROM `' . prefixTable('students') . '`;');
     return array_column($emailTable, 'email');
 }
@@ -321,16 +352,16 @@ function mailer($host, $email, $password, $sender, $subject, $generalBody, $mail
             $result = 'Ostrý e-mail nebyl odeslán nikomu, zkuste znovu odeslat testovací e-mail. <a href="?system=send-test">Zpět k odeslání <b>testovacího</b> e-mailu…</a>';
         } else if ($successful === $total) {
             $result = 'Ostrý e-mail byl úspěšně odeslán na všechny zadané e-mailové adresy. Výborně! <a href=".">Pokračovat zpět do administrace…</a>';
-            setDataValue('other.last_sent', $currentTime->format('j. n. Y \v G:i'));
-            setDataValue('other.skipped_ids', '');
+            setDataValue('generated.last_sent', $currentTime->format('j. n. Y \v G:i'));
+            setDataValue('generated.skipped_ids', '');
         } else {
             $allIds = array_column($mailingList, 'id');
             $skippedIds = array_diff($allIds, $successfulIds);
             $result = 'Ostrý e-mail byl odeslán pouze na ' . $successful . ' z ' . $total . ' e-mailových adres.</p><p>Identifikátory studentů jimž nebyl odeslán e-mail: '
                 . implode(',', $skippedIds) . '</p><p>Identifikátory byly uloženy do databáze. Jakmile zjistíte, kde je chyba, a opravíte ji, použijte odkaz <i>opravit ostré odeslání</i>, který najdete nahoře na stránce <i>rozeslání e-mailů</i>.</p>'
                 . '<p>Nyní můžete <a href="?list=students">pokračovat na tabulku studentů…</a>';
-            setDataValue('other.last_sent', $currentTime->format('j. n. Y \v G:i'));
-            setDataValue('other.skipped_ids', implode(',', $skippedIds));
+            setDataValue('generated.last_sent', $currentTime->format('j. n. Y \v G:i'));
+            setDataValue('generated.skipped_ids', implode(',', $skippedIds));
         }
     }
 

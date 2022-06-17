@@ -8,21 +8,30 @@ function dbConnectionOk() {
 }
 
 function showConfigForm($message = null) {
+    global $config;
+
     if (!configExists() || !dbConnectionOk()) {
         $filledIn = !empty($_POST['dbname']) + !empty($_POST['dbuser']) + !empty($_POST['dbpass']) + !empty($_POST['dbhost']) + !empty($_POST['adminpass']);
         $required = !empty($_POST['dbname']) + !empty($_POST['dbuser']) + isset($_POST['dbpass']) + !empty($_POST['dbhost']) + !empty($_POST['adminpass']);
-        $formDisplayData = array(
-            'error' => $message,
-            'dbname' => isset($_POST['dbname']) ? $_POST['dbname'] : 'jazyky',
-            'dbuser' => isset($_POST['dbuser']) ? $_POST['dbuser'] : 'uzivatelske-jmeno',
-            'dbpass' => isset($_POST['dbpass']) ? $_POST['dbpass'] : 'heslo',
-            'dbhost' => isset($_POST['dbhost']) ? $_POST['dbhost'] : 'localhost',
-            'adminpass' => isset($_POST['adminpass']) ? $_POST['adminpass'] : '',
-        );
+        $formDisplayData = array();
+        $formDisplayData['error'] = $message;
+
+        $formDisplayData['dbname'] = isset($config['dbname']) ? '' : 'jazyky';
+        $formDisplayData['dbuser'] = isset($config['dbuser']) ? '' : 'uzivatelske-jmeno';
+        $formDisplayData['dbpass'] = isset($config['dbpass']) ? '' : 'heslo';
+        $formDisplayData['dbhost'] = isset($config['dbhost']) ? '' : 'localhost';
+        $formDisplayData['adminpass'] = '';
+
+        $formDisplayData['dbname'] = isset($_POST['dbname']) ? $_POST['dbname'] : $formDisplayData['dbname'];
+        $formDisplayData['dbuser'] = isset($_POST['dbuser']) ? $_POST['dbuser'] : $formDisplayData['dbuser'];
+        $formDisplayData['dbpass'] = isset($_POST['dbpass']) ? $_POST['dbpass'] : $formDisplayData['dbpass'];
+        $formDisplayData['dbhost'] = isset($_POST['dbhost']) ? $_POST['dbhost'] : $formDisplayData['dbhost'];
+        $formDisplayData['adminpass'] = isset($_POST['adminpass']) ? $_POST['adminpass'] : $formDisplayData['adminpass'];
 
         if ($filledIn > 0) {
             if ($required == 5) {
-                file_put_contents(__DIR__ . '/../../config.php', "<?php
+                if (!configExists() || $_POST['adminpass'] == $config['adminpass']) {
+                    file_put_contents(__DIR__ . '/../../config.php', "<?php
 return array(
     'dbhost' => '{$_POST['dbhost']}',
     'dbuser' => '{$_POST['dbuser']}',
@@ -31,11 +40,13 @@ return array(
     'adminpass' => '{$_POST['adminpass']}'
 );
 ");
-
-                redirectMessage('setup');
+                    redirectMessage('setup');
+                } else {
+                    $formDisplayData['error'] = 'Zadali jste špatné heslo administrátora. Musíte zadat původní heslo, které jste zvolili při první konfiguraci připojení k databázi.';
+                }
+            } else {
+                $formDisplayData['error'] = 'Nezadali jste všechna potřebná data.';
             }
-
-            $formDisplayData['error'] = 'Nezadali jste všechna potřebná data.';
         }
 
         return adminTemplate(fillTemplate('config-form', $formDisplayData));
