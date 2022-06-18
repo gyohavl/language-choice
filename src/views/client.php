@@ -20,7 +20,11 @@ function getClientView() {
             return '<p>Pro přihlášení do aplikace použijte odkaz z e-mailu.</p>';
         }
     } else {
-        return '<p>Tato aplikace není správně nastavena.</p>';
+        if (!configExists()) {
+            return '<p>Tato aplikace není správně nastavena.</p>';
+        } else {
+            return '<p>Nefunguje připojení k databázi. Zkuste to prosím znovu později.</p>';
+        }
     }
 }
 

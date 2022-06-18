@@ -169,26 +169,26 @@ function systemPage($view) {
     } else if ($view == 'wipe') {
         // dodělat vymazání dat, reset klíče v případě odcizení a klientský pohled (a e-mail)
         /*
-            1. fáze
+            1. přípravná fáze
                 import dat o studentech
                 přidání jazyků
                 nastavení času spuštění a ukončení
                 nastavení textů
                 nastavení výběru jazyka
                 nastavení e-mailového serveru
-            2. fáze
+            2. kontrolní fáze
                 kontrola nastavení pomocí nástroje *stav systému*
-                kontrola uživatelské části webu a potvrzovacího e-mailu (upozornit, že potvrzovací e-mail vyžaduje uložení hesla)
+                kontrola uživatelské části webu a potvrzovacího e-mailu (pozor, potvrzovací e-mail vyžaduje uložení hesla)
                 otestování timeoutu (na stránce odeslání testovacího e-mailu)
                 odeslání testovacího úvodního e-mailu
-            3. fáze (v dostatečném předstihu před spuštěním)
+            3. informační fáze (v dostatečném předstihu před spuštěním)
                 informování studentů/rodičů o odeslání e-mailu pomocí postranních kanálů (web školy, obecný e-mail – ideálně z jiné e-mailové adresy)
                 odeslání ostrého úvodního e-mailu
-            4. fáze (po ukončení)
+            4. kontaktní fáze (po ukončení, v ideálním případě nenastává)
                 kontaktování studentů, kteří si nezvolili jazyk, a doplnění jejich volby (nebo lze volbu rovnou přiřadit, pokud zbyla pouze jedna možnost)
-            5. fáze
+            5. výstupní fáze
                 export dat o studentech
-            6. fáze
+            6. čistící fáze
                 vymazání dat o studentech, časů a automaticky generovaných dat / vymazání všech uložených dat
         */
     }

@@ -27,18 +27,39 @@ function getStudentsTable() {
     $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
     $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 2) . '?k=';
     $languagesArray = getLanguagesArray();
+    $isFiltered = !empty($_GET['filter']) ? true : false;
+    $allowFilter = false;
+    $from = $isFiltered ? '&from=list_students!filter_1' : '';
 
     foreach ($studentsTable as $row) {
         if ($row[6]) {
-            $language = isset($languagesArray[$row[6]]) ? $languagesArray[$row[6]] : '<i class="empty">(neexistující jazyk č. ' . $row[6] . ')</i>';
+            if (isset($languagesArray[$row[6]])) {
+                $language = $languagesArray[$row[6]];
+                $allowFilter = true;
+            } else {
+                $language = '<i class="empty">(neexistující jazyk č. ' . $row[6] . ')</i>';
+            }
         } else {
             $language = '<i class="empty">(žádný)</i>';
         }
 
-        $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[3]</td><td>$row[4]</td><td>$row[5]</td><td>$language</td><td><a href=\"?edit=student&id=$row[0]\">upravit</a></td><td><input type=\"text\" value=\"$linkPrefix$row[2]\" onclick=\"this.setSelectionRange(0, this.value.length)\" readonly></td><td>$row[2]</td></tr>";
+        if ($isFiltered && $row[6] && isset($languagesArray[$row[6]])) {
+            continue;
+        }
+
+        $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[3]</td><td>$row[4]</td><td>$row[5]</td><td>$language</td><td><a href=\"?edit=student&id=$row[0]$from\">upravit</a></td><td><input type=\"text\" value=\"$linkPrefix$row[2]\" onclick=\"this.setSelectionRange(0, this.value.length)\" readonly></td><td>$row[2]</td></tr>";
     }
 
     $html .= '</tbody></table>';
+
+    if ($allowFilter) {
+        if ($isFiltered) {
+            $html = '<p><a href="?list=students">zobrazit všechny studenty</a></p>' . $html;
+        } else {
+            $html = '<p><a href="?list=students&filter=1">zobrazit pouze studenty bez vybraného jazyka</a></p>' . $html;
+        }
+    }
+
     return $html;
 }
 

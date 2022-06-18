@@ -1,0 +1,59 @@
+<h1>Volba druhého cizího jazyka – administrace</h1>
+<h2>Základní menu</h2>
+<ul>
+    <li><a href="?list=students">studenti</a></li>
+    <li><a href="?list=languages">jazyky</a></li>
+    <li><a href="?list=data">další data</a></li>
+    <li><a href="?system=state">stav systému</a></li>
+    <li><a href="?system=send-test">rozeslání e-mailů</a></li>
+    <li><a href="?system=export">export dat</a></li>
+    <li><a href="?system=wipe">možnosti smazání dat</a></li>
+</ul>
+<h2>Proces výběru jazyků z pohledu administrátora</h2>
+<p>Je vhodné dodržet pořadí jednotlivých fází. Kroky uvnitř fází na sobě obvykle nezávisejí, lze je tedy provádět v
+    libovolném sledu.</p>
+<ol>
+    <li>přípravná fáze
+        <ul>
+            <li><a href="?list=students">import dat o studentech</a></li>
+            <li><a href="?list=languages">přidání jazyků</a></li>
+            <li><a href="?edit=data&name=time&from=homepage">nastavení času spuštění a ukončení</a></li>
+            <li><a href="?edit=data&name=text&from=homepage">nastavení textů</a></li>
+            <li><a href="?edit=data&name=choice&from=homepage">nastavení výběru jazyka</a></li>
+            <li><a href="?edit=data&name=mailer&from=homepage">nastavení e-mailového serveru</a></li>
+        </ul>
+    </li>
+    <li>kontrolní fáze
+        <ul>
+            <li><a href="?system=state">kontrola nastavení pomocí nástroje <i>stav systému</i></a></li>
+            <li>kontrola uživatelské části webu a potvrzovacího e-mailu (pozor, potvrzovací e-mail vyžaduje uložení
+                hesla)</li>
+            <li><a href="?system=test-timeout">otestování timeoutu</a> (trvá 2 minuty)</li>
+            <li><a href="?system=send-test">odeslání testovacího úvodního e-mailu</a></li>
+        </ul>
+    </li>
+    <li>informační fáze (v dostatečném předstihu před spuštěním) – tady je třeba zvážit pořadí kroků a podle toho formulovat oba e-maily
+        <ul>
+            <li>informování studentů/rodičů o odeslání úvodního e-mailu pomocí postranních kanálů (web školy, obecný
+                e-mail – ideálně z jiné e-mailové adresy)</li>
+            <li><a href="?system=send-real">odeslání ostrého úvodního e-mailu</a></li>
+        </ul>
+    </li>
+    <li>kontaktní fáze (po ukončení, v ideálním případě nenastává)
+        <ul>
+            <li>kontaktování <a href="?list=students&filter=1">studentů, kteří si nezvolili jazyk</a>, a doplnění jejich volby (nebo lze volbu rovnou
+                přiřadit, pokud zbyla pouze jedna možnost)</li>
+        </ul>
+    </li>
+    <li>výstupní fáze
+        <ul>
+            <li><a href="?system=export">export dat o studentech</a></li>
+        </ul>
+    </li>
+    <li>čistící fáze
+        <ul>
+            <li><a href="?system=wipe">vymazání dat</a> o studentech, časů a automaticky generovaných dat / vymazání všech uložených dat</li>
+        </ul>
+    </li>
+</ol>
+<h2>Možné problémy</h2>
