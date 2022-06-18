@@ -84,7 +84,7 @@ function getLanguagesSelect($chosen) {
     $html .= '<option value="" style="font-style:italic">(žádná)</option>';
     $languagesArray = getLanguagesArray();
 
-    if (!isset($languagesArray[$chosen])) {
+    if (!isset($languagesArray[$chosen]) && $chosen !== '') {
         $html .= '<option value="' . $chosen . '" style="font-style:italic" selected>(neexistující jazyk č. ' . $chosen . ')</option>';
     }
 

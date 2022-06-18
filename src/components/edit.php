@@ -25,7 +25,8 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                 $studentId = isset($_GET['id']) ? $_GET['id'] : $_POST['id'];
                 $formName = 'Upravit studenta ' . $studentId;
                 $studentData = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE id=?;', true, array($studentId));
-                $html .= '<p><a href="' . (!empty($_GET['from']) ? '?' . processFromLink($_GET['from']) : '?list=students') . '">zpět</a> | <a href="?confirm=delete-student&id=' . $studentId . '">smazat</a></p>';
+                $html .= '<p><a href="' . (!empty($_GET['from']) ? '?' . processFromLink($_GET['from']) : '?list=students')
+                    . '">zpět</a> | <a href="?confirm=delete-student&id=' . $studentId . '">smazat</a></p>';
 
                 if (isset($studentData[0])) {
                     $formData = $fill ? $fill : $studentData[0];
@@ -52,6 +53,7 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                 }
             }
 
+            $html .= '<tr><td>klíč</td><td><small>' . fillInput($formData, 'key') . ' <a href="?confirm=change-key&id=' . $studentId . '">(změnit)</a></small></td></tr>';
             $html .= '</table>';
             $html .= $formEnd;
             // todo: styling, key regeneration

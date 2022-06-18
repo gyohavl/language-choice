@@ -16,7 +16,8 @@ function _t($group, $key) {
         ),
         'confirm' => array(
             'delete-student' => 'smazat studenta',
-            'delete-language' => 'smazat jazyk'
+            'delete-language' => 'smazat jazyk',
+            'change-key' => 'změnit klíč studentovi'
         ),
         'success' => array(
             'login' => 'Výborně! Byli jste přihlášeni.',

@@ -3,9 +3,6 @@ function showDashboard() {
     return adminTemplate(fillTemplate('dashboard', array()));
     // text e-mailu
     // text nahoře na webu
-    // export souboru
-    // odeslání e-mailu ([zadat údaje k serveru,] odeslat testovací e-mail, [zadat text e-mailu,] zadat heslo, pak odeslat e-mail rodičům, uložit informaci o odeslání)
-    // změna zcizeného klíče
     // vymazat všechna data z databáze
 }
 

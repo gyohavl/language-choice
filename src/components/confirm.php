@@ -35,6 +35,13 @@ function confirm() {
                 }
                 break;
 
+            case 'change-key':
+                if ($id !== null) {
+                    sql('UPDATE `' . prefixTable('students') . '` SET `key`=? WHERE `id`=?;', false, array(createUniqueKey(), $id));
+                    $successLink = '?list=students';
+                }
+                break;
+
             default:
                 break;
         }
@@ -48,6 +55,7 @@ function confirm() {
 function confirmForm($confirm, $id) {
     $html = 'Opravdu chcete ' . _t('confirm', $confirm);
     $html .= $id !== null ? ' č. ' . $id . '?' : '';
+    $html .= ($confirm == 'change-key') ? '<br>Pokud již student obdržel úvodní e-mail, bude mu nutné zaslat nový přihlašovací odkaz, neboť ten původní přestane platit.' : '';
     $html .= '<form method="post" action=".">';
     $html .= $id !== null ? '<input type="hidden" name="id" value="' . $id . '">' : '';
     $html .= '<input type="hidden" name="confirm" value="' . $confirm . '"><input type="submit" name="confirmed" value="Potvrdit"> <a href=".">storno</a></form>';
