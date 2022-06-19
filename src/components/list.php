@@ -105,12 +105,16 @@ function getLanguagesSelect($chosen) {
     return $html;
 }
 
-function getLanguagesArray($export = false) {
+function getLanguagesArray($export = false, $withClasses = true) {
     $languagesTable = sql('SELECT * FROM `' . prefixTable('languages') . '`;');
     $retArr = array();
 
     foreach ($languagesTable as $row) {
-        $retArr[$row[0]] = $export ? $row['export'] : "$row[1] [$row[2]]";
+        if ($export) {
+            $retArr[$row[0]] = $row['export'];
+        } else {
+            $retArr[$row[0]] = $withClasses ? "$row[1] [$row[2]]" : $row[1];
+        }
     }
 
     return $retArr;

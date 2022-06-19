@@ -13,3 +13,7 @@ body {
     /* Montserrat je potřeba nastavit */
     margin: 1.5rem 2rem;
 }
+
+.choice table td:nth-child(2) {
+    text-align: right;
+}
