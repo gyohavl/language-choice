@@ -177,7 +177,7 @@ function systemPage($view) {
     }
 }
 
-// dodělat klientský pohled
+// dodělat klientský pohled (js refreshe – i automatické, otestovat špatné POSTy, otestovat omezení dodatečných změn, dodělat potvrzovací e-mail)
 // dodělat náhled klientského pohledu a potvrzovacího e-mailu (s informací o heslu!)
 // doplnit nástroj stav systému o informace o potvrzovacím e-mailu, nastavení volby apod.
 // doplnit success texty

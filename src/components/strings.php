@@ -65,6 +65,15 @@ function _t($group, $key) {
             'last_sent' => 'naposledy odesláno',
             'skipped_ids' => 'přeskočené identifikátory'
         ),
+        'client-result' => array(
+            'changed' => 'Jazyk byl úspěšně změněn.',
+            'chosen' => 'Jazyk byl úspěšně zvolen.',
+            'no-change' => 'Jazyk byl již jednou vybrán.',
+            'full' => 'Tento jazyk byl již zaplněn.',
+            'no-language' => 'Zvolený jazyk není k dispozici.',
+            'bad-key' => 'Špatný klíč studenta.',
+            'error' => 'Chyba: '
+        )
     );
 
     return (isset($strings[$group]) && isset($strings[$group][$key])) ? $strings[$group][$key] : "$group.$key";

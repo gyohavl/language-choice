@@ -14,6 +14,29 @@ body {
     margin: 1.5rem 2rem;
 }
 
+.choice .success,
+.choice .error {
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    background-color: lightgreen;
+}
+
+.choice .error {
+    background-color: pink;
+}
+
+.choice table {
+    border-collapse: collapse;
+}
+
+.choice table td {
+    vertical-align: middle;
+}
+
 .choice table td:nth-child(2) {
-    text-align: right;
+    padding: 0.25rem 1rem;
+}
+
+.choice button {
+    font-size: 0.9em;
 }
