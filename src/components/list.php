@@ -30,6 +30,7 @@ function getStudentsTable() {
     $isFiltered = !empty($_GET['filter']) ? true : false;
     $allowFilter = false;
     $from = $isFiltered ? '&from=list_students!filter_1' : '';
+    $noChoice = 0;
 
     foreach ($studentsTable as $row) {
         if ($row[6]) {
@@ -38,9 +39,11 @@ function getStudentsTable() {
                 $allowFilter = true;
             } else {
                 $language = '<i class="empty">(neexistující jazyk č. ' . $row[6] . ')</i>';
+                $noChoice++;
             }
         } else {
             $language = '<i class="empty">(žádný)</i>';
+            $noChoice++;
         }
 
         if ($isFiltered && $row[6] && isset($languagesArray[$row[6]])) {
@@ -50,6 +53,7 @@ function getStudentsTable() {
         $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[3]</td><td>$row[4]</td><td>$row[5]</td><td>$language</td><td><a href=\"?edit=student&id=$row[0]$from\">upravit</a></td><td><input type=\"text\" value=\"$linkPrefix$row[2]\" onclick=\"this.setSelectionRange(0, this.value.length)\" readonly></td><td>$row[2]</td></tr>";
     }
 
+    $html .= empty($studentsTable) ? '<tr><td colspan="9">nebyli přidáni žádní studenti</td></tr>' : '';
     $html .= '</tbody></table>';
 
     if ($allowFilter) {
@@ -59,6 +63,8 @@ function getStudentsTable() {
             $html = '<p><a href="?list=students&filter=1">zobrazit pouze studenty bez vybraného jazyka</a></p>' . $html;
         }
     }
+
+    $html = '<p>celkem je v databázi ' . count($studentsTable) . ' studentů, ' . $noChoice . ' z nich nemá vybraný jazyk</p>' . $html;
 
     return $html;
 }
@@ -74,6 +80,7 @@ function getLanguagesTable() {
         $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[4]</td><td>$row[2]</td><td>$numberOfChoices/$row[3]</td><td><a href=\"?edit=language&id=$row[0]\">upravit</a></td></tr>";
     }
 
+    $html .= empty($languagesTable) ? '<tr><td colspan="6">nebyly přidány žádné jazyky</td></tr>' : '';
     $html .= '</tbody></table>';
     return $html;
 }
@@ -126,8 +133,8 @@ function getClassesSelect($chosen) {
     $fieldName = 'class';
 
     foreach (getClasses() as $class) {
-        $selected = $class === $chosen ? 'checked' : '';
-        $html .= '<input type="radio" name="' . $fieldName . '" id="' . $fieldName . $class . '" value="' . $class . '" ' . $selected . '>
+        $selected = $class == $chosen ? 'checked' : '';
+        $html .= '<input type="radio" name="' . $fieldName . '" id="' . $fieldName . $class . '" value="' . $class . '" ' . $selected . ' required>
             <label for="' . $fieldName . $class . '">' . $class . '. třída</label><br>';
     }
 

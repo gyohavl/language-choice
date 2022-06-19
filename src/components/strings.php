@@ -17,13 +17,22 @@ function _t($group, $key) {
         'confirm' => array(
             'delete-student' => 'smazat studenta',
             'delete-language' => 'smazat jazyk',
-            'change-key' => 'změnit klíč studentovi'
+            'change-key' => 'změnit klíč studentovi',
+            'wipe-next' => 'smazat data o studentech, časy a automaticky generovaná data',
+            'wipe-mailer-password' => 'smazat uložené heslo k e-mailu',
+            'wipe-clean' => 'smazat všechna data v databázi'
         ),
         'success' => array(
             'login' => 'Výborně! Byli jste přihlášeni.',
             'setup' => 'Výborně! Údaje byly nastaveny.',
             'tables' => 'Tabulky byly vytvořeny.',
             'send-test' => 'Testovací e-mail byl odeslán.',
+            'delete-student' => 'Student byl smazán.',
+            'delete-language' => 'Jazyk byl smazán.',
+            'change-key' => 'Klíč byl změněn.',
+            'wipe-next' => 'Požadovaná data byla vymazána.',
+            'wipe-mailer-password' => 'Heslo k e-mailu bylo smazáno z databáze.',
+            'wipe-clean' => 'Všechna data byla smazána. Nyní pokračujte vytvořením tabulek v databázi.',
             'done' => 'Hotovo.'
         ),
         'time' => array(
@@ -49,11 +58,11 @@ function _t($group, $key) {
             'heading' => 'Nastavení e-mailového serveru',
             'host' => 'adresa serveru (host)',
             'email' => 'e-mailová adresa',
-            'password' => '<abbr title="je uloženo nezabezpečeně, lze ho zadat až při odesílání e-mailů">heslo (nepovinné)</abbr>'
+            'password' => '<abbr title="je uloženo nezabezpečeně, lze ho zadat až při odesílání e-mailů – ale je nezbytné pro potvrzovací e-maily">heslo (nepovinné)</abbr>'
         ),
         'generated' => array(
             'heading' => 'Generováno automaticky',
-            'last_sent' => 'naposledy odesláno</abbr>',
+            'last_sent' => 'naposledy odesláno',
             'skipped_ids' => 'přeskočené identifikátory'
         ),
     );

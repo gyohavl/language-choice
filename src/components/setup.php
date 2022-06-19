@@ -109,8 +109,8 @@ function showDbSetup() {
             redirectMessage('tables');
         } else {
             return adminTemplate(
-                '<form method="post" action=".">Nyní dojde k vytvoření tabulek v databázi (jejich názvy jsou vypsány níže).<br>'
-                    . 'Existující tabulky se stejným názvem budou smazány. <input type="submit" name="dbcreate" value="Souhlasím"></form>'
+                '<form method="post" action="."><p>Nyní dojde k vytvoření tabulek v databázi (jejich názvy jsou vypsány níže).</p>'
+                    . '<p>Existující tabulky se stejným názvem budou smazány. <input type="submit" name="dbcreate" value="Souhlasím"></p></form>'
                     . '<code>' . prefixTable('students') . '<br>' . prefixTable('languages') . '<br>' . prefixTable('data') . '</code>'
             );
         }

@@ -49,11 +49,11 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
                 } else if ($fieldName == 'class') {
                     $html .= '<td>' . getClassesSelect(fillInput($formData, $fieldName)) . '</td></tr>';
                 } else {
-                    $html .= '<td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
+                    $html .= '<td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '" required></td></tr>';
                 }
             }
 
-            $html .= '<tr><td>klíč</td><td><small>' . fillInput($formData, 'key') . ' <a href="?confirm=change-key&id=' . $studentId . '">(změnit)</a></small></td></tr>';
+            $html .= $studentId ? ('<tr><td>klíč</td><td><small>' . fillInput($formData, 'key') . ' <a href="?confirm=change-key&id=' . $studentId . '">(změnit)</a></small></td></tr>') : '';
             $html .= '</table>';
             $html .= $formEnd;
             // todo: styling, key regeneration
@@ -91,8 +91,10 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
 
                 if ($fieldName == 'class') {
                     $html .= '<td>' . getClassesSelect(fillInput($formData, $fieldName)) . '</td></tr>';
+                } else if ($fieldName == 'limit') {
+                    $html .= '<td><input type="number" min="1" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '" required></td></tr>';
                 } else {
-                    $html .= '<td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '"></td></tr>';
+                    $html .= '<td><input type="text" name="' . $fieldName . '" id="' . $fieldName . '" value="' . fillInput($formData, $fieldName) . '" required></td></tr>';
                 }
             }
 
@@ -258,6 +260,11 @@ function editData($form) {
                 : 'UPDATE `' . prefixTable('languages') . '` SET ';
             $requiredFields = array('name', 'class', 'limit', 'export');
             $data = array();
+
+            if (!is_numeric($_POST['limit']) || !is_int((int)$_POST['limit']) || (int)$_POST['limit'] < 1) {
+                $errorMessage = _t('form-l', 'limit') . ' musí být přirozené číslo';
+                break;
+            }
 
             foreach ($requiredFields as $field) {
                 if (!empty($_POST[$field])) {

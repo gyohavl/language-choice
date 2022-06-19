@@ -1,6 +1,5 @@
 <?php
 function confirm() {
-    $successText = 'done';
     $successLink = '.';
 
     if (empty($_GET['confirm']) && empty($_POST['confirm'])) {
@@ -42,11 +41,29 @@ function confirm() {
                 }
                 break;
 
+            case 'wipe-next':
+                sql("TRUNCATE TABLE `" . prefixTable('students') . "`;", false);
+                setDataValue('time.from', '');
+                setDataValue('time.to', '');
+                setDataValue('generated.last_sent', '');
+                setDataValue('generated.skipped_ids', '');
+                break;
+
+            case 'wipe-mailer-password':
+                setDataValue('mailer.password', '');
+                break;
+
+            case 'wipe-clean':
+                sql("DROP TABLE `" . prefixTable('students') . "`;", false);
+                sql("DROP TABLE `" . prefixTable('languages') . "`;", false);
+                sql("DROP TABLE `" . prefixTable('data') . "`;", false);
+                break;
+
             default:
                 break;
         }
 
-        redirectMessage($successText, 'success', $successLink);
+        redirectMessage($confirm, 'success', $successLink);
     } else {
         return confirmForm($confirm, $id);
     }
@@ -54,7 +71,7 @@ function confirm() {
 
 function confirmForm($confirm, $id) {
     $html = 'Opravdu chcete ' . _t('confirm', $confirm);
-    $html .= $id !== null ? ' č. ' . $id . '?' : '';
+    $html .= $id !== null ? ' č. ' . $id . '?' : '?';
     $html .= ($confirm == 'change-key') ? '<br>Pokud již student obdržel úvodní e-mail, bude mu nutné zaslat nový přihlašovací odkaz, neboť ten původní přestane platit.' : '';
     $html .= '<form method="post" action=".">';
     $html .= $id !== null ? '<input type="hidden" name="id" value="' . $id . '">' : '';

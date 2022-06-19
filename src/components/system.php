@@ -96,7 +96,8 @@ function systemPage($view) {
         $fields = array('sender', 'subject', 'body');
 
         foreach ($fields as $field) {
-            $value = preg_replace('/\n/', '<br>', getDataValue('text.email_' . $field));
+            $value = getDataValue('text.email_' . $field);
+            $value = $value ? preg_replace('/\n/', '<br>', $value) : '';
             $html .= '<tr><th>' . _t('text', 'email_' . $field) . '</th><td>' . ($value ? $value : $placeholder) . '</td></tr>';
         }
 
@@ -167,12 +168,20 @@ function systemPage($view) {
         $html .= '<textarea class="export" readonly>' . $data . '</textarea>';
         return adminTemplate($html);
     } else if ($view == 'wipe') {
-        // dodělat vymazání dat
-        // dodělat klientský pohled
-        // dodělat náhled klientského pohledu a potvrzovacího e-mailu (s informací o heslu!)
-        // doplnit nástroj stav systému o informace o potvrzovacím e-mailu, nastavení volby apod.
+        $html = '<h1>Možnosti smazání dat</h1><p><a href=".">zpět</a></p><ul>'
+            . '<li><a href="?confirm=wipe-next">' . _t('confirm', 'wipe-next') . '</a> (tato možnost se hodí pro každoroční čištění)</li>'
+            // . '<li><a href="?confirm=wipe-mailer-password">' . _t('confirm', 'wipe-mailer-password') . '</a></li>'
+            . '<li><a href="?confirm=wipe-clean">' . _t('confirm', 'wipe-clean') . '</a></li>'
+            . '</ul>';
+        return adminTemplate($html);
     }
 }
+
+// dodělat klientský pohled
+// dodělat náhled klientského pohledu a potvrzovacího e-mailu (s informací o heslu!)
+// doplnit nástroj stav systému o informace o potvrzovacím e-mailu, nastavení volby apod.
+// doplnit success texty
+// dodělat design
 
 function systemAction($action) {
     global $config;
@@ -241,6 +250,7 @@ function getEmailBody($generalBody, $recipient, $forEmail = true) {
     $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 2) . '?k=';
     $replacementData = array('odkaz' => $linkPrefix . $recipient['key'], 'spisc' => $recipient['sid'], 'jmeno' => $recipient['name'], 'trida' => $recipient['class']);
     $body = $generalBody;
+    $body = $body ? $body : '';
     $body = $forEmail ? $body : preg_replace('/\n/', '<br>', $body);
 
     foreach ($replacementData as $key => $value) {
