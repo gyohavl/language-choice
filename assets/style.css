@@ -39,4 +39,22 @@ body {
 
 .choice button {
     font-size: 0.9em;
+    cursor: pointer;
+}
+
+.choice button[disabled] {
+    cursor: default;
+}
+
+.progress-text {
+    margin-left: 0.5rem;
+    color: grey;
+}
+
+.choice button.loading + .progress-text::after {
+    content: 'načítání…';
+}
+
+.choice button.loaded + .progress-text::after {
+    content: 'načteno';
 }

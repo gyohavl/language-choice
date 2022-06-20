@@ -9,7 +9,7 @@ try {
     }
 } catch (error) { }
 
-let abbrs = [...document.getElementsByTagName('abbr')];
+const abbrs = [...document.getElementsByTagName('abbr')];
 abbrs.forEach(el => {
     el.tabIndex = 0;
 });

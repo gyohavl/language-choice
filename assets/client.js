@@ -1,10 +1,9 @@
 init();
 var countdown, countDownDate, refreshResolved = true;
 
-function init() {
+function init(refreshed) {
     if (document.getElementById('refreshBefore')) {
-        document.getElementById('refreshBefore').innerHTML = '<p>Zbývající čas: <span id="remaining">00:00</span></p><p><button type="button" id="refreshButton" onclick="refresh(this);" disabled>obnovit stránku</button></p>';
-        setTimeout(function () { document.getElementById('refreshButton').disabled = false; }, 3000);
+        document.getElementById('refreshBefore').innerHTML = '<p>Zbývající čas: <span id="remaining">00:00</span></p><p>' + getRefreshButton('obnovit stránku', refreshed) + '</p>';
         countDownDate = new Date(document.getElementById('refreshBefore').getAttribute('data-time')).getTime();
         clearInterval(countdown);
         countdown = setInterval(count, 1000);
@@ -12,9 +11,19 @@ function init() {
     }
 
     if (document.getElementById('refreshDuring')) {
-        document.getElementById('refreshDuring').innerHTML = '<button type="button" id="refreshButton" onclick="refresh(this);" disabled>aktualizovat počty volných míst</button>';
-        setTimeout(function () { document.getElementById('refreshButton').disabled = false; }, 3000);
+        document.getElementById('refreshDuring').innerHTML = getRefreshButton('aktualizovat počty volných míst', refreshed);
     }
+}
+
+function getRefreshButton(text, refreshed) {
+    setTimeout(function () {
+        if (document.getElementById('refreshButton')) {
+            document.getElementById('refreshButton').disabled = false;
+            document.getElementById('refreshButton').removeAttribute('class');
+        }
+    }, 3000);
+    const loaded = refreshed ? ' class="loaded"' : '';
+    return '<button type="button" id="refreshButton"' + loaded + ' onclick="refresh(this);" disabled>' + text + '</button><span class="progress-text"></span>';
 }
 
 function count(initial) {
@@ -50,33 +59,35 @@ function refresh(el) {
     refreshResolved = false;
     const xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
-        // document.getElementById('choice').style.opacity = 1;
         document.getElementById('choice').innerHTML = this.responseText;
         refreshResolved = true;
-        init();
+        init(true);
     };
     xhttp.open('GET', location.search + '&ajax=1', true);
     xhttp.send();
 
     if (el) {
         el.disabled = true;
+        el.setAttribute('class', 'loading');
     }
-    // el.textContent = 'načítání…';
-    // el.style.cursor = 'progress';
-    // document.getElementById('choice').style.opacity = 0.5;
 }
 
 function choose(el, event, key, language) {
-    event.preventDefault();
+    if (event) {
+        event.preventDefault();
+    }
+
     const xhttp = new XMLHttpRequest();
     xhttp.onload = function () {
-        // document.getElementById('choice').style.opacity = 1;
         document.getElementById('choice').innerHTML = this.responseText;
         init();
     };
     xhttp.open('POST', '.', true);
     xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhttp.send('key=' + key + '&language=' + language + '&ajax=1');
-    el.disabled = true;
-    // document.getElementById('choice').style.opacity = 0.5;
+
+    if (el) {
+        el.disabled = true;
+        el.setAttribute('class', 'loading');
+    }
 }

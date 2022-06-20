@@ -58,7 +58,7 @@ function _t($group, $key) {
             'heading' => 'Nastavení e-mailového serveru',
             'host' => 'adresa serveru (host)',
             'email' => 'e-mailová adresa',
-            'password' => '<abbr title="je uloženo nezabezpečeně, lze ho zadat až při odesílání e-mailů – ale je nezbytné pro potvrzovací e-maily">heslo (nepovinné)</abbr>'
+            'password' => '<abbr title="je uloženo nezabezpečeně, lze ho zadat až při odesílání úvodního e-mailu – je však nezbytné pro potvrzovací e-maily">heslo (nepovinné)</abbr>'
         ),
         'generated' => array(
             'heading' => 'Generováno automaticky',

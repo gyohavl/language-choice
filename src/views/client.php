@@ -119,7 +119,8 @@ function getClientLanguagesTable($languagesTable, $key, $choice) {
             $button = 'vybráno';
         } else {
             if ($available > 0) {
-                $button = '<button type="submit" name="language" value="' . $row['id'] . '" onclick="choose(this, event, \'' . $key . '\', ' . $row['id'] . ');">vybrat</button>';
+                $button = '<button type="submit" name="language" value="' . $row['id'] . '" onclick="choose(this, event, \''
+                    . $key . '\', ' . $row['id'] . ');">vybrat</button><span class="progress-text"></span>';
             } else {
                 $button = '';
             }
