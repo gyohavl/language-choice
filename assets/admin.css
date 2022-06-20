@@ -2,11 +2,12 @@ th {
     text-align: left;
 }
 
-th label, td label {
+th label,
+td label {
     padding-right: 1rem;
 }
 
-table input[type=submit] {
+table input[type="submit"] {
     width: 100%;
     margin-top: 0.5rem;
 }
@@ -15,7 +16,8 @@ table.bordered {
     border-collapse: collapse;
 }
 
-table.bordered td, table.bordered th {
+table.bordered td,
+table.bordered th {
     padding: 0.25rem 0.5rem;
     border: 1px solid #ddd;
 }
@@ -25,7 +27,8 @@ textarea {
     height: 150px;
 }
 
-textarea[name="import-csv"], textarea.export {
+textarea[name="import-csv"],
+textarea.export {
     height: 400px;
 }
 
@@ -42,4 +45,39 @@ span[onclick] {
     cursor: pointer;
     text-decoration: underline;
     text-decoration-style: dashed;
+}
+
+.link-container {
+    user-select: all;
+    font-size: small;
+}
+
+.table-overflow {
+    overflow-x: auto;
+}
+
+.table-overflow table {
+    white-space: nowrap;
+}
+
+abbr[title] {
+    display: inline-block;
+}
+
+table tr abbr[title] {
+    position: relative;
+}
+
+abbr[title]:focus {
+    text-decoration: none;
+}
+
+abbr[title]:focus::after {
+    content: attr(title);
+    display: block;
+    padding: 0.25rem 0.5rem;
+    background-color: #eee;
+    border: 1px solid #ccc;
+    position: absolute;
+    font-weight: normal;
 }

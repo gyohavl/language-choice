@@ -169,7 +169,7 @@ function systemPage($view) {
         return adminTemplate($html);
     } else if ($view == 'wipe') {
         $html = '<h1>Možnosti smazání dat</h1><p><a href=".">zpět</a></p><ul>'
-            . '<li><a href="?confirm=wipe-next">' . _t('confirm', 'wipe-next') . '</a> (tato možnost se hodí pro každoroční čištění)</li>'
+            . '<li><a href="?confirm=wipe-next">' . _t('confirm', 'wipe-next') . '</a> (tato možnost se hodí pro každoroční čištění na konci celého procesu)</li>'
             // . '<li><a href="?confirm=wipe-mailer-password">' . _t('confirm', 'wipe-mailer-password') . '</a></li>'
             . '<li><a href="?confirm=wipe-clean">' . _t('confirm', 'wipe-clean') . '</a></li>'
             . '</ul>';
@@ -177,7 +177,7 @@ function systemPage($view) {
     }
 }
 
-// dodělat klientský pohled (js refreshe – i automatické, otestovat špatné POSTy, otestovat omezení dodatečných změn, dodělat potvrzovací e-mail)
+// dodělat klientský pohled (otestovat špatné POSTy, otestovat omezení dodatečných změn, dodělat potvrzovací e-mail)
 // dodělat náhled klientského pohledu a potvrzovacího e-mailu (s informací o heslu!)
 // doplnit nástroj stav systému o informace o potvrzovacím e-mailu, nastavení volby apod.
 // doplnit success texty

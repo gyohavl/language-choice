@@ -21,8 +21,8 @@ function showList($list) {
 }
 
 function getStudentsTable() {
-    $html = '<table class="bordered"><thead><tr>
-    <th>id</th><th>spis. č.</th><th>e-mail</th><th>jméno</th><th>třída</th><th>vybraný jazyk</th><th>upravit</th><th>přihlašovací odkaz</th><th>klíč (pro kontrolu)</th>
+    $html = '<div class="table-overflow"><table class="bordered"><thead><tr>
+    <th>id</th><th>spis. č.</th><th>e-mail</th><th>jméno</th><th>třída</th><th>vybraný jazyk</th><th>upravit</th><th><abbr title="ke zkopírování a individuálnímu zaslání v případě potřeby">přihlašovací odkaz</abbr></th>
     </tr></thead><tbody>';
     $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
     $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 2) . '?k=';
@@ -50,11 +50,11 @@ function getStudentsTable() {
             continue;
         }
 
-        $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[3]</td><td>$row[4]</td><td>$row[5]</td><td>$language</td><td><a href=\"?edit=student&id=$row[0]$from\">upravit</a></td><td><input type=\"text\" value=\"$linkPrefix$row[2]\" onclick=\"this.setSelectionRange(0, this.value.length)\" readonly></td><td>$row[2]</td></tr>";
+        $html .= "<tr><td>$row[0]</td><td>$row[1]</td><td>$row[3]</td><td>$row[4]</td><td>$row[5]</td><td>$language</td><td><a href=\"?edit=student&id=$row[0]$from\">upravit</a></td><td><span class=\"link-container\">$linkPrefix$row[2]</span></td></tr>";
     }
 
-    $html .= empty($studentsTable) ? '<tr><td colspan="9">nebyli přidáni žádní studenti</td></tr>' : '';
-    $html .= '</tbody></table>';
+    $html .= empty($studentsTable) ? '<tr><td colspan="8">nebyli přidáni žádní studenti</td></tr>' : '';
+    $html .= '</tbody></table></div>';
 
     if ($allowFilter) {
         if ($isFiltered) {

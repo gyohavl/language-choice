@@ -376,7 +376,7 @@ function createUniqueKey() {
         $existingKeys[] = $row['key'];
     }
 
-    $newKey = generateRandomString(25);
+    $newKey = generateRandomString();
 
     if (in_array($newKey, $existingKeys)) {
         return createUniqueKey();
@@ -386,12 +386,17 @@ function createUniqueKey() {
 }
 
 // https://stackoverflow.com/questions/4356289/php-random-string-generator
-function generateRandomString($length = 10) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+function generateRandomString() {
+    // using 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ but without vowels to prevent real (especially curse) words
+    // there are 50^25 possible combinations so it's pretty much impossible to break through using only brute force
+    $stringLength = 25;
+    $characters = '0123456789bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ';
     $charactersLength = strlen($characters);
     $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
+
+    for ($i = 0; $i < $stringLength; $i++) {
         $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
+
     return $randomString;
 }

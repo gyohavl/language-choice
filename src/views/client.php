@@ -23,7 +23,14 @@ function getClientView() {
                 $fill['languages'] = $clientLanguages;
                 return fillTemplate('client-content', $fill);
             } else {
-                return '<p>Tento přihlašovací odkaz je neplatný. Pokud si myslíte, že jde o chybu, kontaktujte správce aplikace.</p>';
+                $text = '<p>Tento přihlašovací odkaz je neplatný. Pokud si myslíte, že jde o chybu, kontaktujte správce aplikace.</p>';
+
+                if (isset($_GET['ajax'])) {
+                    echo $text;
+                    exit;
+                }
+
+                return $text;
             }
         } else if (!empty($_POST['key']) && !empty($_POST['language'])) {
             $result = setClientLanguage($_POST['key'], $_POST['language']);
@@ -47,15 +54,17 @@ function getClientLanguages($key, $class, $choice, $result) {
     switch (choiceState()) {
         case 0:
             return '<p>Možnost volby jazyka zatím není k dispozici. Termín zpřístupnění bude brzy oznámen.</p>';
-            break;
 
         case 1:
             $timeFrom = getDataValue('time.from');
             $processedTimeFrom = new DateTime($timeFrom);
-            return '<p>Možnost volby jazyka bude zpřístupněna ' . $weekdays[$processedTimeFrom->format('w')] . ' '
+            $today = new DateTime('now');
+            $remainingTime = $processedTimeFrom->diff($today)->days;
+            $html = '<p>Možnost volby jazyka bude zpřístupněna ' . $weekdays[$processedTimeFrom->format('w')] . ' '
                 . $processedTimeFrom->format('j') . '. ' . $months[$processedTimeFrom->format('n')] . ' ' . $processedTimeFrom->format('Y \v G:i')
-                . '. <span id="refreshBefore">V ten čas nezapomeňte <a href="?k=' . $key . '">obnovit stránku</a>.</span></p>';
-            break;
+                . '.</p>';
+            $html .= $remainingTime ? '' : ('<span id="refreshBefore" data-time="' . $processedTimeFrom->format('c') . '">V ten čas nezapomeňte <a href="?k=' . $key . '">obnovit stránku</a>.</span>');
+            return $html;
 
         case 2:
             $languagesTable = sql('SELECT * FROM `' . prefixTable('languages') . '` WHERE `class`=?;', true, array($class));
