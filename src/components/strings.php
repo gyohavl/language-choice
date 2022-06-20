@@ -68,6 +68,7 @@ function _t($group, $key) {
         'client-result' => array(
             'changed' => 'Jazyk byl úspěšně změněn.',
             'chosen' => 'Jazyk byl úspěšně zvolen.',
+            'already-chosen' => 'Tento jazyk již byl zvolen dříve.',
             'no-change' => 'Jazyk byl již jednou vybrán.',
             'full' => 'Tento jazyk byl již zaplněn.',
             'no-language' => 'Zvolený jazyk není k dispozici.',

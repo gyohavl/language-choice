@@ -80,7 +80,7 @@ function systemPage($view) {
 
         $html .= '</p>';
         $html .= $isFix ? '<p>Tuto stránku použijte pouze v případě, kdy selže odeslání ostrého e-mailu a e-maily se odešlou jen na některé adresy. </p>' : '';
-        $html .= '<h2>' . _t('mailer', 'heading') . ' <a href="?edit=data&name=mailer&from=system_' . $view . '">(upravit)</a></h2><table>';
+        $html .= '<h2>' . _t('mailer', 'heading') . ' <a href="?edit=data&name=mailer&from=system_' . $view . '">(upravit)</a></h2><table class="bordered">';
         $placeholder = '<i>(chybí!)</i>';
         $fields = array('host', 'email', 'password');
 
@@ -92,7 +92,7 @@ function systemPage($view) {
             }
         }
 
-        $html .= '</table><h2>' . _t('text', 'heading') . ' <a href="?edit=data&name=text&from=system_' . $view . '">(upravit)</a></h2><table>';
+        $html .= '</table><h2>' . _t('text', 'heading') . ' <a href="?edit=data&name=text&from=system_' . $view . '">(upravit)</a></h2><table class="bordered">';
         $fields = array('sender', 'subject', 'body');
 
         foreach ($fields as $field) {
@@ -177,7 +177,8 @@ function systemPage($view) {
     }
 }
 
-// dodělat klientský pohled (otestovat špatné POSTy, otestovat omezení dodatečných změn, dodělat potvrzovací e-mail)
+// OPRAVIT URL U POTVRZOVACÍHO E-MAILU
+// dodělat klientský pohled (dodělat potvrzovací e-mail)
 // dodělat náhled klientského pohledu a potvrzovacího e-mailu (s informací o heslu!)
 // doplnit nástroj stav systému o informace o potvrzovacím e-mailu, nastavení volby apod.
 // doplnit success texty
@@ -248,7 +249,10 @@ function getEmailDummyData($email = '', $sid = 123) {
 
 function getEmailBody($generalBody, $recipient, $forEmail = true) {
     $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 2) . '?k=';
-    $replacementData = array('odkaz' => $linkPrefix . $recipient['key'], 'spisc' => $recipient['sid'], 'jmeno' => $recipient['name'], 'trida' => $recipient['class']);
+    $choice = !empty($recipient['choice']) ? $recipient['choice'] : null;
+    $languageArray = getLanguagesArray(false, false);
+    $chosenLanguage = ($choice && isset($languageArray[$choice])) ? $languageArray[$choice] : '';
+    $replacementData = array('odkaz' => $linkPrefix . $recipient['key'], 'spisc' => $recipient['sid'], 'jmeno' => $recipient['name'], 'trida' => $recipient['class'], 'volba' => $chosenLanguage);
     $body = $generalBody;
     $body = $body ? $body : '';
     $body = $forEmail ? $body : preg_replace('/\n/', '<br>', $body);
@@ -268,8 +272,6 @@ function getListOfEmails($isFix) {
 }
 
 function mailer($host, $email, $password, $sender, $subject, $generalBody, $mailingList, $isTest = true) {
-    // Create an instance; passing `true` enables exceptions
-    $mail = new PHPMailer(true);
     $successfulIds = array();
     $total = count($mailingList);
     $successful = 0;
@@ -282,19 +284,8 @@ function mailer($host, $email, $password, $sender, $subject, $generalBody, $mail
     echo '<table class="bordered"><tr><th>pořadí</th><th>id</th><th>jméno</th><th>e-mail</th><th>výsledek</th></tr>';
 
     try {
-        // Server settings
-        $mail->isSMTP();                                            // Send using SMTP
-        $mail->Host       = $host;                                  // Set the SMTP server to send through
-        $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+        $mail = getPHPMailerInstance($host, $email, $password, $sender, $subject);
         $mail->SMTPKeepAlive = true;                                // https://github.com/PHPMailer/PHPMailer/wiki/Sending-to-lists
-        $mail->Username   = $email;                                 // SMTP username
-        $mail->Password   = $password;                              // SMTP password
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            // Enable implicit TLS encryption
-        $mail->Port       = 465;                                    // TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
-        $mail->CharSet    = 'UTF-8';
-
-        $mail->setFrom($email, $sender);
-        $mail->Subject = $subject;
 
         foreach ($mailingList as $no => $recipient) {
             flush();

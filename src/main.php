@@ -3,6 +3,7 @@ date_default_timezone_set('Europe/Prague');
 include(__DIR__ . '/components/db.php');
 include(__DIR__ . '/components/setup.php');
 include(__DIR__ . '/components/auth.php');
+include(__DIR__ . '/components/mailer.php');
 include(__DIR__ . '/components/dashboard.php');
 include(__DIR__ . '/components/list.php');
 include(__DIR__ . '/components/edit.php');

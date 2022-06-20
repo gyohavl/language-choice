@@ -1,6 +1,10 @@
 <?php
 include(__DIR__ . '/../main.php');
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 echo fillTemplate('client', getClientView());
 
 function getClientView() {
@@ -74,7 +78,7 @@ function getClientLanguages($key, $class, $choice, $result) {
             $html = '';
 
             if ($result) {
-                if ($result == 'changed' || $result == 'chosen') {
+                if ($result == 'changed' || $result == 'chosen' || $result == 'already-chosen') {
                     $html .= '<div class="success">' . _t('client-result', $result) . '</div>';
                 } else {
                     $html .= '<div class="error">' . _t('client-result', 'error') . _t('client-result', $result) . '</div>';
@@ -143,7 +147,7 @@ function getClientLanguagesTable($languagesTable, $key, $choice) {
 }
 
 function setClientLanguage($key, $language) {
-    $studentData = sql('SELECT `id`, `class`, `choice` FROM `' . prefixTable('students') . '` WHERE `key`=?;', true, array($key));
+    $studentData = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE `key`=?;', true, array($key));
     $languageData = sql('SELECT `class`, `limit` FROM `' . prefixTable('languages') . '` WHERE `id`=?;', true, array($language));
     $allowChange = (bool)getDataValue('choice.allow_change');
 
@@ -153,22 +157,27 @@ function setClientLanguage($key, $language) {
         if (isset($languageData[0]) && $studentData[0]['class'] == $languageData[0]['class']) {
             $numberOfChoices = getLanguageOccupancy($languageData[0]['class'], $language);
             $available = $languageData[0]['limit'] - $numberOfChoices;
-            // je v jazyku volné místo?
-            if ($available > 0) {
-                // jsou povolené změny? (pokud už má nastavený jazyk)
-                if (!$studentData[0]['choice'] || $allowChange) {
-                    sql('UPDATE `' . prefixTable('students') . '` SET `choice`=? WHERE `id`=?;', false, array($language, $studentData[0]['id']));
+            if ($studentData[0]['choice'] != $language) {
+                // je v jazyku volné místo?
+                if ($available > 0) {
+                    // jsou povolené změny? (pokud už má nastavený jazyk)
+                    if (!$studentData[0]['choice'] || $allowChange) {
+                        sql('UPDATE `' . prefixTable('students') . '` SET `choice`=? WHERE `id`=?;', false, array($language, $studentData[0]['id']));
+                        sendConfirmationEmail($studentData[0], $language);
 
-                    if ($studentData[0]['choice']) {
-                        return 'changed';
+                        if ($studentData[0]['choice']) {
+                            return 'changed';
+                        } else {
+                            return 'chosen';
+                        }
                     } else {
-                        return 'chosen';
+                        return 'no-change';
                     }
                 } else {
-                    return 'no-change';
+                    return 'full';
                 }
             } else {
-                return 'full';
+                return 'already-chosen';
             }
         } else {
             return 'no-language';
@@ -182,4 +191,25 @@ function clientResultMessage($key, $index, $isAjax) {
     $ajax = $isAjax ? '&ajax=1' : '';
     header("Location: ?k=$key&result=$index$ajax");
     exit;
+}
+
+function sendConfirmationEmail($student, $newChoice) {
+    if (getDataValue('choice.confirmation_send')) {
+        $host = getDataValue('mailer.host');
+        $email = getDataValue('mailer.email');
+        $password = getDataValue('mailer.password');
+        $sender = getDataValue('text.email_sender');
+        $subject = getDataValue('choice.confirmation_subject');
+        $generalBody = getDataValue('choice.confirmation_body');
+
+        if ($sender && $generalBody && $subject && $host && $email && $password) {
+            try {
+                $mail = getPHPMailerInstance($host, $email, $password, $sender, $subject);
+                $mail->addAddress($student['email']);
+                $mail->Body = getEmailBody($generalBody, $student);
+                $mail->send();
+            } catch (Exception $e) {
+            }
+        }
+    }
 }
