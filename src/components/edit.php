@@ -56,7 +56,6 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
             $html .= $studentId ? ('<tr><td>klíč</td><td><small>' . fillInput($formData, 'key') . ' <a href="?confirm=change-key&id=' . $studentId . '">(změnit)</a></small></td></tr>') : '';
             $html .= '</table>';
             $html .= $formEnd;
-            // todo: styling, key regeneration
             break;
 
         case 'language':
@@ -100,7 +99,6 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
 
             $html .= '</table>';
             $html .= $formEnd;
-            // todo: styling
             break;
 
         case 'data':
@@ -142,11 +140,14 @@ function showEditForm($form, $fill = null, $errorMessage = '') {
 
                     if ($field == 'email_body' || $field == 'confirmation_body') {
                         $onclick = 'onclick="bodyInsert(this, \'' . $fid . '\');"';
-                        $html .= 'povolené proměnné: ';
+                        $html .= '<p>povolené proměnné: ';
                         $html .= $field == 'confirmation_body' ? '<span ' . $onclick . ' title="vybraný jazyk">(volba)</span>, ' : '';
                         $html .= '<span ' . $onclick . '>(odkaz)</span>,
                         <span ' . $onclick . ' title="spisové číslo">(spisc)</span>, <span ' . $onclick . '>(jmeno)</span>,
                         <span ' . $onclick . '>(trida)</span>';
+                        $html .= '</p>';
+                    } else if ($field == 'client') {
+                        $html .= '<p>podporuje HTML (bez ošetření XSS zranitelnosti)</p>';
                     }
 
                     $html .= '</td></tr>';
@@ -172,7 +173,6 @@ function fillInput($fill, $key) {
 }
 
 function editData($form) {
-    $successText = 'done';
     $successLink = '.';
     $errorMessage = 'někde nastala chyba';
 
@@ -224,7 +224,7 @@ function editData($form) {
             foreach ($requiredFields as $field) {
                 if (!empty($_POST[$field])) {
                     $query .= $addStudent ? "`$field`, " : "`$field`=?, ";
-                    $data[] = $_POST[$field];
+                    $data[] = sanitizeInput($_POST[$field]);
                 } else {
                     $errorMessage = 'chybí data';
                     break 2;
@@ -269,7 +269,7 @@ function editData($form) {
             foreach ($requiredFields as $field) {
                 if (!empty($_POST[$field])) {
                     $query .= $addLanguage ? "`$field`, " : "`$field`=?, ";
-                    $data[] = $_POST[$field];
+                    $data[] = sanitizeInput($_POST[$field]);
                 } else {
                     $errorMessage = 'chybí data';
                     break 2;
@@ -316,6 +316,12 @@ function editData($form) {
                         }
                     }
 
+                    if ($field != 'client') {
+                        $value = sanitizeInput($value);
+                    } else if ($value) {
+                        $value = preg_replace('/<\/?textarea>?/', '[textarea]', $value);
+                    }
+
                     $query = 'UPDATE `' . prefixTable('data') . '` SET `value`=? WHERE `name`=?;';
                     sql($query, false, array($value, $fid));
                 }
@@ -336,7 +342,7 @@ function editData($form) {
         $successLink = '?' . processFromLink($_POST['from']);
     }
 
-    redirectMessage($successText, 'success', $successLink);
+    redirectMessage($form, 'success', $successLink);
 }
 
 function processFromLink($link) {
@@ -347,9 +353,13 @@ function validateLine($line) {
     $values = explode(',', trim($line));
 
     if (count($values) == 4) {
-        if ($values[0] && $values[1] && $values[2]) {
+        if ($values[0] && $values[1] && $values[2] && $values[3]) {
             if (in_array($values[3], getClasses())) {
-                return array(true, $values, null);
+                if (filter_var($values[1], FILTER_VALIDATE_EMAIL)) {
+                    return array(true, $values, null);
+                } else {
+                    $errorMessage = ' byl <abbr title="v případě chyby validace ji lze obejít přes formulář přidat/upravit studenta">detekován nevalidní e-mail</abbr>';
+                }
             } else {
                 $errorMessage = ' zadána špatná třída (zadáno <code>' . $values[3] . '</code>, podporováno <code>' . implode('/', getClasses()) . '</code>)';
             }

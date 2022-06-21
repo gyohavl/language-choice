@@ -17,6 +17,14 @@ table ~ input[type="submit"] {
     min-width: 5rem;
 }
 
+textarea + p {
+    margin-top: 0;
+}
+
+tbody {
+    vertical-align: top;
+}
+
 table.bordered {
     border-collapse: collapse;
 }

@@ -120,6 +120,12 @@ function isChoiceOpen() {
     return choiceState() === 2;
 }
 
-function isChoicePast() {
-    return choiceState() === 3;
+function sanitizeInput($input) {
+    if ($input) {
+        $input = strip_tags($input); // is not sufficient against XSS, but we trust the admin
+        $input = preg_replace('/"/', '“', $input); // prevents ruining inputs
+        return $input;
+    } else {
+        return '';
+    }
 }

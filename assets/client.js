@@ -33,7 +33,7 @@ function count(initial) {
     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
     hours = hours > 0 ? hours + ':' : '';
-    minutes = minutes < 10 ? '0' + minutes : minutes;
+    minutes = (minutes < 10 && hours) ? '0' + minutes : minutes;
     seconds = seconds < 10 ? '0' + seconds : seconds;
 
     if (distance < 1000) {

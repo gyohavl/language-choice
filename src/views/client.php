@@ -160,16 +160,13 @@ function setClientLanguage($key, $language) {
     $languageData = sql('SELECT `class`, `limit` FROM `' . prefixTable('languages') . '` WHERE `id`=?;', true, array($language));
     $allowChange = (bool)getDataValue('choice.allow_change');
 
-    // sedí klíč?
     if (isset($studentData[0])) {
-        // existuje jazyk se správnou třídou s daným id?
         if (isset($languageData[0]) && $studentData[0]['class'] == $languageData[0]['class']) {
-            $numberOfChoices = getLanguageOccupancy($languageData[0]['class'], $language);
-            $available = $languageData[0]['limit'] - $numberOfChoices;
             if ($studentData[0]['choice'] != $language) {
-                // je v jazyku volné místo?
+                $numberOfChoices = getLanguageOccupancy($languageData[0]['class'], $language);
+                $available = $languageData[0]['limit'] - $numberOfChoices;
+
                 if ($available > 0) {
-                    // jsou povolené změny? (pokud už má nastavený jazyk)
                     if (!$studentData[0]['choice'] || $allowChange) {
                         sql('UPDATE `' . prefixTable('students') . '` SET `choice`=? WHERE `id`=?;', false, array($language, $studentData[0]['id']));
                         sendConfirmationEmail($studentData[0], $language);

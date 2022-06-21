@@ -34,6 +34,10 @@ function _t($group, $key) {
             'wipe-mailer-password' => 'Heslo k e-mailu bylo smazáno z databáze.',
             'wipe-clean' => 'Všechna data byla smazána. Nyní pokračujte vytvořením tabulek v databázi.',
             'confirmation-test' => 'E-mail byl pravděpodobně odeslán, zkontrolujte svou e-mailovou schránku.',
+            'import-students' => 'Studenti byli importováni.',
+            'student' => 'Student byl uložen.',
+            'language' => 'Jazyk byl uložen.',
+            'data' => 'Data byla uložena.',
             'done' => 'Hotovo.'
         ),
         'time' => array(

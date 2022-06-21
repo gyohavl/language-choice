@@ -2,7 +2,7 @@
 function sql($sql, $fetch = true, $params = array(), $checkConnection = false) {
     global $config;
     $charset = getSqlLanguageSettings(true);
-    logSql($sql, $params);
+    // logSql($sql, $params);
 
     try {
         $db = new PDO('mysql:dbname=' . $config['dbname'] . ';charset=' . $charset . ';host=' . $config['dbhost'], $config['dbuser'], $config['dbpass']);

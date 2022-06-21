@@ -236,9 +236,6 @@ function systemPage($view) {
     }
 }
 
-// doplnit success texty
-// dodělat design
-
 function systemAction($action) {
     global $config;
 
@@ -359,7 +356,8 @@ function mailer($host, $email, $password, $sender, $subject, $generalBody, $mail
 
     try {
         $mail = getPHPMailerInstance($host, $email, $password, $sender, $subject);
-        $mail->SMTPKeepAlive = true;                                // https://github.com/PHPMailer/PHPMailer/wiki/Sending-to-lists
+        // https://github.com/PHPMailer/PHPMailer/wiki/Sending-to-lists
+        $mail->SMTPKeepAlive = true;
 
         foreach ($mailingList as $no => $recipient) {
             flush();
