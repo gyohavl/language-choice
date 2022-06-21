@@ -33,6 +33,7 @@ function _t($group, $key) {
             'wipe-next' => 'Požadovaná data byla vymazána.',
             'wipe-mailer-password' => 'Heslo k e-mailu bylo smazáno z databáze.',
             'wipe-clean' => 'Všechna data byla smazána. Nyní pokračujte vytvořením tabulek v databázi.',
+            'confirmation-test' => 'E-mail byl pravděpodobně odeslán, zkontrolujte svou e-mailovou schránku.',
             'done' => 'Hotovo.'
         ),
         'time' => array(
@@ -58,7 +59,7 @@ function _t($group, $key) {
             'heading' => 'Nastavení e-mailového serveru',
             'host' => 'adresa serveru (host)',
             'email' => 'e-mailová adresa',
-            'password' => '<abbr title="je uloženo nezabezpečeně, lze ho zadat až při odesílání úvodního e-mailu – je však nezbytné pro potvrzovací e-maily">heslo (nepovinné)</abbr>'
+            'password' => '<abbr title="je uloženo nezabezpečeně, lze ho zadat až při odesílání úvodního e-mailu – je však nezbytné pro potvrzovací e-maily">heslo k e-mailu</abbr>'
         ),
         'generated' => array(
             'heading' => 'Generováno automaticky',

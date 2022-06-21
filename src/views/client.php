@@ -13,6 +13,10 @@ function getClientView() {
             $key = $_GET['k'];
             $data = sql('SELECT * FROM `' . prefixTable('students') . '` WHERE `key`=?;', true, array($key));
 
+            if ($_GET['k'] == 'test_view' && isset($_GET['choice']) && isset($_GET['class'])) {
+                $data[0] = getClientDummyData($_GET['class'], $_GET['choice']);
+            }
+
             if (isset($data[0])) {
                 $result = isset($_GET['result']) ? $_GET['result'] : null;
                 $clientLanguages = getClientLanguages($key, $data[0]['class'], $data[0]['choice'], $result);
@@ -54,14 +58,19 @@ function getClientView() {
 function getClientLanguages($key, $class, $choice, $result) {
     $weekdays = array('v neděli', 'v pondělí', 'v úterý', 've středu', 've čtvrtek', 'v pátek', 'v sobotu');
     $months = array('', 'ledna', 'února', 'března', 'dubna', 'května', 'června', 'července', 'srpna', 'září', 'října', 'listopadu', 'prosince');
+    $choiceState = choiceState();
 
-    switch (choiceState()) {
+    if ($key == 'test_view') {
+        $choiceState = (isset($_GET['state']) && $_GET['state'] != 'current') ? $_GET['state'] : $choiceState;
+    }
+
+    switch ($choiceState) {
         case 0:
             return '<p>Možnost volby jazyka zatím není k dispozici. Termín zpřístupnění bude brzy oznámen.</p>';
 
         case 1:
             $timeFrom = getDataValue('time.from');
-            $processedTimeFrom = new DateTime($timeFrom);
+            $processedTimeFrom = $timeFrom ? new DateTime($timeFrom) : new DateTime('next year'); // test_view without starting date
             $today = new DateTime('now');
             $remainingTime = $processedTimeFrom->diff($today)->days;
             $html = '<p>Možnost volby jazyka bude zpřístupněna ' . $weekdays[$processedTimeFrom->format('w')] . ' '
@@ -191,25 +200,4 @@ function clientResultMessage($key, $index, $isAjax) {
     $ajax = $isAjax ? '&ajax=1' : '';
     header("Location: ?k=$key&result=$index$ajax");
     exit;
-}
-
-function sendConfirmationEmail($student, $newChoice) {
-    if (getDataValue('choice.confirmation_send')) {
-        $host = getDataValue('mailer.host');
-        $email = getDataValue('mailer.email');
-        $password = getDataValue('mailer.password');
-        $sender = getDataValue('text.email_sender');
-        $subject = getDataValue('choice.confirmation_subject');
-        $generalBody = getDataValue('choice.confirmation_body');
-
-        if ($sender && $generalBody && $subject && $host && $email && $password) {
-            try {
-                $mail = getPHPMailerInstance($host, $email, $password, $sender, $subject);
-                $mail->addAddress($student['email']);
-                $mail->Body = getEmailBody($generalBody, $student);
-                $mail->send();
-            } catch (Exception $e) {
-            }
-        }
-    }
 }

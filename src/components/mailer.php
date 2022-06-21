@@ -23,3 +23,48 @@ function getPHPMailerInstance($host, $email, $password, $sender, $subject) {
 
     return $mail;
 }
+
+function isConfirmationEmailReady() {
+    if (getDataValue('choice.confirmation_send')) {
+        $host = getDataValue('mailer.host');
+        $email = getDataValue('mailer.email');
+        $password = getDataValue('mailer.password');
+        $sender = getDataValue('text.email_sender');
+        $subject = getDataValue('choice.confirmation_subject');
+        $generalBody = getDataValue('choice.confirmation_body');
+
+        if ($sender && $generalBody && $subject && $host && $email && $password) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function sendConfirmationEmail($student, $newChoice, $isTest = false) {
+    if (getDataValue('choice.confirmation_send')) {
+        $student['choice'] = $newChoice;
+        $host = getDataValue('mailer.host');
+        $email = getDataValue('mailer.email');
+        $password = getDataValue('mailer.password');
+        $sender = getDataValue('text.email_sender');
+        $subject = getDataValue('choice.confirmation_subject');
+        $generalBody = getDataValue('choice.confirmation_body');
+
+        if ($sender && $generalBody && $subject && $host && $email && $password) {
+            try {
+                $mail = getPHPMailerInstance($host, $email, $password, $sender, $subject);
+                $mail->addAddress($student['email']);
+                $mail->Body = getEmailBody($generalBody, $student, true, !$isTest);
+                $mail->send();
+                return 'success';
+            } catch (Exception $e) {
+                return 'exception';
+            }
+        }
+
+        return 'missing';
+    }
+
+    return 'deactivated';
+}

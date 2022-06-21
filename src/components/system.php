@@ -59,6 +59,8 @@ function systemPage($view) {
         $html .= $number ? '<li>ještě ' . $number . ' studentů nemá zvolený jazyk 🟡</li>' : '<li>všichni studenti mají zvolený jazyk 🟢</li>';
         // $html .= '<li><a href="">zobrazit náhled aktuálního stavu uživatelské části webu</a></li>';
         // $html .= '<li><a href="">zobrazit náhled potvrzovacího e-mailu ZOBRAZIT STAV (JESTLI SE ODEŠLE, NEBO NE)</a></li>';
+        $html .= '<li><a href="?system=client-preview">náhled uživatelské části webu</a></li>';
+        $html .= '<li><a href="?system=confirmation-test">nastavení potvrzovacího e-mailu</a></li>';
         $html .= '</ul>';
         return adminTemplate($html);
     } else if ($view == 'send-test' || $view == 'send-real') {
@@ -140,9 +142,65 @@ function systemPage($view) {
             flush();
         }
 
-        echo '<p>Skvěle, test proběhl v pořádku!</p>';
+        echo '<p>Skvěle, test proběhl v pořádku!</p><p><a href="?system=send-test">Pokračovat k odeslání testovacího úvodního e-mailu…</a></p>';
         echo $pageParts[1];
         return '';
+    } else if ($view == 'confirmation-test') {
+        $html = '<h1>Potvrzovací e-mail</h1><p><a href="?system=state">zpět</a></p><h2>Důležité informace</h2>';
+        $html .= '<ul>'
+            . '<li>Odeslání potvrzovacího e-mailu zpomaluje odpověď serveru při volbě jazyka uživatelem. Nemá však vliv na rychlost uložení odpovědi do databáze.</li>'
+            . '<li>Pro fukčnost zasílání potvrzovacího e-mailu je nutné do databáze uložit heslo k e-mailu (viz níže). Toto heslo je uloženo nezabezpečeně.</li>'
+            . '<li>Kromě hesla je nutné uložit i další údaje, všechny jsou uvedeny níže. Na základě těchto údajů je funkce odeslání potvrzovacího e-mailu aktuálně <b>' . (isConfirmationEmailReady() ? 'zapnutá' : 'vypnutá') . '</b>. Reálnou funkčnost odesílání lze však prověřit pouze odesláním testovacího e-mailu pomocí formuláře (rovněž níže).</li>'
+            . '<li>Při problémech s odesíláním/doručováním e-mailů je vhodnější použít stránku <a href="?system=send-test">odeslání testovacího úvodního e-mailu</a>, neboť zobrazuje případné chybové hlášky.</li>'
+            . '</ul>';
+        $html .= '<h2>' . _t('mailer', 'heading') . ' <a href="?edit=data&name=mailer&from=system_' . $view . '">(upravit)</a></h2><table class="bordered">';
+        $placeholder = '<i>(chybí!)</i>';
+        $fields = array('host', 'email', 'password');
+
+        foreach ($fields as $field) {
+            $value = getDataValue('mailer.' . $field);
+            $html .= '<tr><th>' . _t('mailer', $field) . '</th><td>' . ($value ? $value : $placeholder) . '</td></tr>';
+        }
+
+        $html .= '</table><h2>' . _t('text', 'heading') . ' <a href="?edit=data&name=text&from=system_' . $view . '">(upravit)</a></h2><table class="bordered">';
+
+        $value = getDataValue('text.email_sender');
+        $html .= '<tr><th>' . _t('text', 'email_sender') . '</th><td>' . ($value ? $value : $placeholder) . '</td></tr>';
+
+        $html .= '</table><h2>' . _t('choice', 'heading') . ' <a href="?edit=data&name=choice&from=system_' . $view . '">(upravit)</a></h2><table class="bordered">';
+
+        $value = getDataValue('choice.confirmation_send');
+        $html .= '<tr><th>' . _t('choice', 'confirmation_send') . '</th><td>' . ($value ? 'ano' : '<i>(nutno zaškrtnout!)</i>') . '</td></tr>';
+        $value = getDataValue('choice.confirmation_subject');
+        $html .= '<tr><th>' . _t('choice', 'confirmation_subject') . '</th><td>' . ($value ? $value : $placeholder) . '</td></tr>';
+        $value = getDataValue('choice.confirmation_body');
+        $value = $value ? preg_replace('/\n/', '<br>', $value) : '';
+        $html .= '<tr><th>' . _t('choice', 'confirmation_body') . '</th><td>' . ($value ? $value : $placeholder) . '</td></tr>';
+
+        $value = getEmailBody(getDataValue('choice.confirmation_body'), getEmailDummyData(), false);
+        $html .= '<tr><th>' . _t('choice', 'confirmation_body') . ' (náhled)</th><td>' . ($value ? $value : $placeholder) . '</td></tr></table>';
+        $html .= '<h2>Odeslání testovacího potvrzovacího e-mailu</h2><table><form method="post" action="."><input type="hidden" name="system" value="confirmation-test">';
+
+        $html .= '<tr><th><label for="test_address">adresát testovacího e-mailu</label></th><td><input type="text" name="test_address" id="test_address" required></td></tr>';
+        $html .= '</table><br><input type="submit" value="Odeslat testovací e-mail"></form>';
+        return adminTemplate($html);
+    } else if ($view == 'client-preview') {
+        $html = '<h1>Náhled uživatelského zobrazení</h1><p><a href="?system=state">zpět</a>';
+        $html .= '<ul><li>Samotný výběr jazyka v tomto náhledu není funkční.</li><li>Návrat na tuto stránku je možný pomocí tlačítka „zpět“ v prohlížeči.</li></ul>';
+        $html .= '<form method="get" action=".."><input type="hidden" name="k" value="test_view"><table>';
+        $html .= '<tr><td><label for="state">stav přihlašování</label></td><td>'
+            . '<select name="state" id="state">'
+            . '<option value="current">aktuání</option>'
+            . '<option value="0">bez zadaného času zahájení</option>'
+            . '<option value="1">před zahájením</option>'
+            . '<option value="2">během přihlašování</option>'
+            . '<option value="3">po ukončení</option>'
+            . '</select>'
+            . '</td></tr>';
+        $html .= '<tr><td><label for="class">' . _t('form', 'class') . '</label></td><td>' . getClassesSelect(9) . '</td></tr>';
+        $html .= '<tr><td><label for="choice">' . _t('form', 'choice') . '</label></td><td>' . getLanguagesSelect('') . '</td></tr>';
+        $html .= '<tr><td></td><td><input type="submit" value="Zobrazit náhled"></td></tr></table></form>';
+        return adminTemplate($html);
     } else if ($view == 'export' || $view == 'export-csv') {
         $data = "spisc,e-mail,jmeno,trida,volba\r\n";
         $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
@@ -177,9 +235,6 @@ function systemPage($view) {
     }
 }
 
-// OPRAVIT URL U POTVRZOVACÍHO E-MAILU
-// dodělat klientský pohled (dodělat potvrzovací e-mail)
-// dodělat náhled klientského pohledu a potvrzovacího e-mailu (s informací o heslu!)
 // doplnit nástroj stav systému o informace o potvrzovacím e-mailu, nastavení volby apod.
 // doplnit success texty
 // dodělat design
@@ -240,18 +295,37 @@ function systemAction($action) {
         } else {
             return adminTemplate('Chyba: některé údaje nebyly vyplněny. ' . $button);
         }
+    } else if ($action == 'confirmation-test') {
+        if (isset($_POST['test_address'])) {
+            $result = sendConfirmationEmail(getEmailDummyData($_POST['test_address']), 0, true);
+
+            if ($result == 'success') {
+                redirectMessage('confirmation-test', 'success', '?system=confirmation-test');
+            } else {
+                return adminTemplate('Chyba: některé údaje nebyly vyplněny. <a href="?system=confirmation-test">Zpět k odeslání testovacího potvrzovacího e-mailu</a>');
+            }
+        }
     }
 }
 
-function getEmailDummyData($email = '', $sid = 123) {
-    return array('id' => 0, 'email' => $email, 'key' => 'asdfghjkl12345', 'sid' => $sid, 'name' => 'Jan Novák', 'class' => 5);
+function getClientDummyData($class, $choice) {
+    $data = getEmailDummyData('jan.novak@example.com');
+    $data['class'] = $class;
+    $data['choice'] = $choice;
+    return $data;
 }
 
-function getEmailBody($generalBody, $recipient, $forEmail = true) {
-    $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 2) . '?k=';
+function getEmailDummyData($email = '', $sid = 123) {
+    return array('id' => 0, 'email' => $email, 'key' => 'asdfghjkl12345', 'sid' => $sid, 'name' => 'Jan Novák', 'class' => 5, 'choiceDummy' => 'italština');
+}
+
+function getEmailBody($generalBody, $recipient, $forEmail = true, $isClient = false) {
+    $levelsUp = $isClient ? 1 : 2;
+    $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], $levelsUp) . '?k=';
     $choice = !empty($recipient['choice']) ? $recipient['choice'] : null;
     $languageArray = getLanguagesArray(false, false);
     $chosenLanguage = ($choice && isset($languageArray[$choice])) ? $languageArray[$choice] : '';
+    $chosenLanguage = isset($recipient['choiceDummy']) ? $recipient['choiceDummy'] : $chosenLanguage;
     $replacementData = array('odkaz' => $linkPrefix . $recipient['key'], 'spisc' => $recipient['sid'], 'jmeno' => $recipient['name'], 'trida' => $recipient['class'], 'volba' => $chosenLanguage);
     $body = $generalBody;
     $body = $body ? $body : '';
