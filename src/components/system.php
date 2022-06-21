@@ -51,16 +51,17 @@ function systemPage($view) {
             $html .= ' <a href="?edit=data&name=time.' . $fromTo . '&from=system_state">(upravit)</a></li>';
         }
 
+        $html .= '<li>výběr jazyka <b>' . (getDataValue('choice.allow_change') ? '🟢 ' : '🟡 ne') . 'lze</b> dodatečně změnit <a href="?edit=data&name=choice.allow_change&from=system_state"">(upravit)</a></li>';
+        $html .= '<li><a href="?system=confirmation-test">nastavení potvrzovacího e-mailu</a> (funkce je ' . (isConfirmationEmailReady() ? 'zapnutá' : 'vypnutá') . ')</li>';
+        $html .= '<li><a href="?system=client-preview">náhled uživatelské části webu</a></li>';
+
         $mlrl = getDataValue('generated.last_sent');
         $html .= $mlrl ? '<li>hromadný e-mail byl odeslán ' . $mlrl . ' 🟢</li>' : '<li>hromadný e-mail zatím nebyl odeslán 🟡 <a href="?system=send-test">(nastavit odeslání)</a></li>';
 
         $result = sql('SELECT COUNT(*) FROM `' . prefixTable('students') . '` WHERE `choice` IS NULL', true);
         $number = isset($result[0]) && isset($result[0][0]) ? intval($result[0][0]) : 0;
         $html .= $number ? '<li>ještě ' . $number . ' studentů nemá zvolený jazyk 🟡</li>' : '<li>všichni studenti mají zvolený jazyk 🟢</li>';
-        // $html .= '<li><a href="">zobrazit náhled aktuálního stavu uživatelské části webu</a></li>';
-        // $html .= '<li><a href="">zobrazit náhled potvrzovacího e-mailu ZOBRAZIT STAV (JESTLI SE ODEŠLE, NEBO NE)</a></li>';
-        $html .= '<li><a href="?system=client-preview">náhled uživatelské části webu</a></li>';
-        $html .= '<li><a href="?system=confirmation-test">nastavení potvrzovacího e-mailu</a></li>';
+
         $html .= '</ul>';
         return adminTemplate($html);
     } else if ($view == 'send-test' || $view == 'send-real') {
@@ -235,7 +236,6 @@ function systemPage($view) {
     }
 }
 
-// doplnit nástroj stav systému o informace o potvrzovacím e-mailu, nastavení volby apod.
 // doplnit success texty
 // dodělat design
 

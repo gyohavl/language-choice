@@ -26,21 +26,25 @@
     <li>kontrolní fáze
         <ul>
             <li><a href="?system=state">kontrola nastavení pomocí nástroje <i>stav systému</i></a></li>
-            <li>kontrola <a href="?system=client-preview">uživatelské části webu</a> a <a href="?system=confirmation-test">potvrzovacího e-mailu</a></li>
+            <li>kontrola <a href="?system=client-preview">uživatelské části webu</a> a <a
+                    href="?system=confirmation-test">potvrzovacího e-mailu</a></li>
             <li><a href="?system=test-timeout">otestování timeoutu</a> (trvá 2 minuty)</li>
             <li><a href="?system=send-test">odeslání testovacího úvodního e-mailu</a></li>
         </ul>
     </li>
-    <li>informační fáze (v dostatečném předstihu před spuštěním) – tady je třeba zvážit pořadí kroků a podle toho formulovat oba e-maily
+    <li>informační fáze (v dostatečném předstihu před spuštěním) – tady je třeba zvážit pořadí kroků a podle toho
+        formulovat oba e-maily
         <ul>
-            <li>informování studentů (či rodičů) o odeslání úvodního e-mailu pomocí postranních kanálů (web školy, obecný
-                e-mail – ideálně z jiné e-mailové adresy)</li>
+            <li>informování studentů (či rodičů) o odeslání úvodního e-mailu pomocí jiných komunikačních kanálů (web
+                školy, obecný
+                e-mail – ideálně z odlišné e-mailové adresy)</li>
             <li><a href="?system=send-real">odeslání ostrého úvodního e-mailu</a></li>
         </ul>
     </li>
     <li>kontaktní fáze (po ukončení, v ideálním případě nenastává)
         <ul>
-            <li>kontaktování <a href="?list=students&filter=1">studentů, kteří si nezvolili jazyk</a>, a doplnění jejich volby (nebo lze volbu rovnou
+            <li>kontaktování <a href="?list=students&filter=1">studentů, kteří si nezvolili jazyk</a>, a doplnění jejich
+                volby (nebo lze volbu rovnou
                 přiřadit, pokud zbyla pouze jedna možnost)</li>
         </ul>
     </li>
@@ -51,13 +55,48 @@
     </li>
     <li>čistící fáze
         <ul>
-            <li><a href="?system=wipe">vymazání dat</a> o studentech, časů a automaticky generovaných dat / vymazání všech uložených dat</li>
+            <li><a href="?system=wipe">vymazání dat</a> o studentech, časů a automaticky generovaných dat / vymazání
+                všech uložených dat</li>
         </ul>
     </li>
 </ol>
+<h2>Proces výběru jazyků z pohledu studenta</h2>
+<ol>
+    <li>dozvím se o tom, že bych měl do určitého data dostat e-mail s přihlašovacím odkazem</li>
+    <li>dostanu e-mail s přihlašovacím odkazem a s termínem začátku výběru jazyků</li>
+    <li>v čas začátku výběru jazyků rozkliknu přihlašovací odkaz a zvolím kýžený jazyk</li>
+</ol>
 <h2>Možné problémy</h2>
 <ul>
-    <li>hromadný (úvodní) e-mail se neodeslal na všechny adresy, ale jen na některé z nich</li>
-    <li>studentovi nedorazil úvodní e-mail</li>
-    <li>student neudržel svůj přihlašovací odkaz v tajnosti a existuje riziko, že toho někdo zneužije</li>
+    <li>
+        hromadný (úvodní) e-mail se neodeslal na všechny adresy, ale jen na některé z nich
+        <ul>
+            <li>
+                nejprve je však potřeba zjistit, kde nastaly problémy – to usnadňují chybové hlášky, které by se měly
+                objevit v tabulce při odesílání e-mailů – a tyto chyby opravit (obvykle <a href="?list=students">v
+                    tabulce studentů</a>)</li>
+            <li>
+                následně stačí přejít do nástroje <a href="?system=send-real&send-fix=1">opravit ostré odeslání</a> a
+                hromadný e-mail znova odeslat, tentokrát však pouze na určité adresy (viz seznam adresátů dole na
+                stránce – mělo by jít právě o ty e-maily u nichž nastal problém)</li>
+        </ul>
+    </li>
+    <li>
+        studentovi nedorazil úvodní e-mail
+        <ul>
+            <li>
+                zašleme danému studentovi nový úvodní e-mail, tentokrát však z běžného e-mailového účtu – nezbytnou
+                součástí tohoto e-mailu je přihlašovací odkaz daného studenta, který nalezneme <a
+                    href="?list=students">v seznamu studentů</a></li>
+        </ul>
+    </li>
+    <li>
+        student neudržel svůj přihlašovací odkaz v tajnosti a existuje riziko, že toho někdo zneužije
+        <ul>
+            <li>
+                vygenerujeme nový klíč: <a href="?list=students">seznam studentů</a> → upravit → klíč (změnit)
+            </li>
+            <li>zkopírujeme nový přihlašovací odkaz daného studenta (ze seznamu studentů) a zašleme mu ho e-mailem</li>
+        </ul>
+    </li>
 </ul>

@@ -1,9 +1,6 @@
 <?php
 function showDashboard() {
     return adminTemplate(fillTemplate('dashboard', array()));
-    // text e-mailu
-    // text nahoře na webu
-    // vymazat všechna data z databáze
 }
 
 function redirectMessage($message = 'done', $type = 'success', $url = '.') {
