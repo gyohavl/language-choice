@@ -3,7 +3,7 @@ var countdown, countDownDate, refreshResolved = true;
 
 function init(refreshed) {
     if (document.getElementById('refreshBefore')) {
-        document.getElementById('refreshBefore').innerHTML = '<p>Zbývající čas: <span id="remaining">00:00</span></p><p>' + getRefreshButton('obnovit stránku', refreshed) + '</p>';
+        document.getElementById('refreshBefore').innerHTML = '<p>Zbývající čas: <span id="remaining">0:00</span></p><p>' + getRefreshButton('obnovit stránku', refreshed) + '</p>';
         countDownDate = new Date(document.getElementById('refreshBefore').getAttribute('data-time')).getTime();
         clearInterval(countdown);
         countdown = setInterval(count, 1000);
@@ -38,7 +38,7 @@ function count(initial) {
 
     if (distance < 1000) {
         if (document.getElementById('remaining')) {
-            document.getElementById('remaining').innerHTML = '00:00';
+            document.getElementById('remaining').innerHTML = '0:00';
 
             if (distance > -10000 && !initial && refreshResolved) {
                 refresh();
@@ -63,7 +63,7 @@ function refresh(el) {
         refreshResolved = true;
         init(true);
     };
-    xhttp.open('GET', location.search + '&ajax=1', true);
+    xhttp.open('GET', location.search + '&ajax=1&nocache=' + new Date().getTime(), true);
     xhttp.send();
 
     if (el) {

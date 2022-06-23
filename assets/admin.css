@@ -17,12 +17,12 @@ td label {
     padding-right: 1rem;
 }
 
-table input[type="submit"] {
+table input[type='submit'] {
     width: 100%;
     margin-top: 0.5rem;
 }
 
-table ~ input[type="submit"] {
+table ~ input[type='submit'] {
     margin-top: 0.5rem;
     min-width: 5rem;
 }
@@ -50,7 +50,7 @@ textarea {
     height: 150px;
 }
 
-textarea[name="import-csv"],
+textarea[name='import-csv'],
 textarea.export {
     height: 400px;
 }

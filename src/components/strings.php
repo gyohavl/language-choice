@@ -79,6 +79,7 @@ function _t($group, $key) {
             'full' => 'Tento jazyk byl již zaplněn.',
             'no-language' => 'Zvolený jazyk není k dispozici.',
             'bad-key' => 'Špatný klíč studenta.',
+            'bad-state' => 'Přihlašování není aktivní.',
             'error' => 'Chyba: '
         )
     );

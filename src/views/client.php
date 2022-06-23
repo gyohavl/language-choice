@@ -127,12 +127,13 @@ function getClientLanguagesTable($languagesTable, $key, $choice) {
     foreach ($languagesTable as $row) {
         $numberOfChoices = getLanguageOccupancy($row['class'], $row['id']);
         $available = $row['limit'] - $numberOfChoices;
+        $primaryClass = empty($choice) ? 'class="primary"' : '';
 
         if ($choice == $row['id']) {
-            $button = 'vybráno';
+            $button = '<span class="chosen">vybráno</span>';
         } else {
             if ($available > 0) {
-                $button = '<button type="submit" name="language" value="' . $row['id'] . '" onclick="choose(this, event, \''
+                $button = '<button type="submit" name="language" value="' . $row['id'] . '" ' . $primaryClass . ' onclick="choose(this, event, \''
                     . $key . '\', ' . $row['id'] . ');">vybrat</button><span class="progress-text"></span>';
             } else {
                 $button = '';
@@ -160,36 +161,40 @@ function setClientLanguage($key, $language) {
     $languageData = sql('SELECT `class`, `limit` FROM `' . prefixTable('languages') . '` WHERE `id`=?;', true, array($language));
     $allowChange = (bool)getDataValue('choice.allow_change');
 
-    if (isset($studentData[0])) {
-        if (isset($languageData[0]) && $studentData[0]['class'] == $languageData[0]['class']) {
-            if ($studentData[0]['choice'] != $language) {
-                $numberOfChoices = getLanguageOccupancy($languageData[0]['class'], $language);
-                $available = $languageData[0]['limit'] - $numberOfChoices;
+    if (isChoiceOpen()) {
+        if (isset($studentData[0])) {
+            if (isset($languageData[0]) && $studentData[0]['class'] == $languageData[0]['class']) {
+                if ($studentData[0]['choice'] != $language) {
+                    $numberOfChoices = getLanguageOccupancy($languageData[0]['class'], $language);
+                    $available = $languageData[0]['limit'] - $numberOfChoices;
 
-                if ($available > 0) {
-                    if (!$studentData[0]['choice'] || $allowChange) {
-                        sql('UPDATE `' . prefixTable('students') . '` SET `choice`=? WHERE `id`=?;', false, array($language, $studentData[0]['id']));
-                        sendConfirmationEmail($studentData[0], $language);
+                    if ($available > 0) {
+                        if (!$studentData[0]['choice'] || $allowChange) {
+                            sql('UPDATE `' . prefixTable('students') . '` SET `choice`=? WHERE `id`=?;', false, array($language, $studentData[0]['id']));
+                            sendConfirmationEmail($studentData[0], $language);
 
-                        if ($studentData[0]['choice']) {
-                            return 'changed';
+                            if ($studentData[0]['choice']) {
+                                return 'changed';
+                            } else {
+                                return 'chosen';
+                            }
                         } else {
-                            return 'chosen';
+                            return 'no-change';
                         }
                     } else {
-                        return 'no-change';
+                        return 'full';
                     }
                 } else {
-                    return 'full';
+                    return 'already-chosen';
                 }
             } else {
-                return 'already-chosen';
+                return 'no-language';
             }
         } else {
-            return 'no-language';
+            return 'bad-key';
         }
     } else {
-        return 'bad-key';
+        return 'bad-state';
     }
 }
 

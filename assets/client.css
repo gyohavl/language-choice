@@ -2,55 +2,133 @@
     box-sizing: border-box;
 }
 
-:root {
-    --primary-color: #790e1c;
-}
-
 body {
     font-family: Montserrat, sans-serif;
-    /* font-size: 18px; */
     line-height: 1.5;
-    /* Montserrat je potřeba nastavit */
     margin: 1.5rem auto;
     width: 90%;
     max-width: 700px;
 }
 
-/* .container {
-    width: 100%;
-    max-width: 500px;
-} */
+h1,
+h2 {
+    color: #790e1c;
+    font-weight: normal;
+}
 
-.choice .success,
-.choice .error {
-    padding: 0.5rem 1rem;
+h1 {
+    text-transform: uppercase;
+}
+
+h2 {
+    margin-bottom: 0;
+}
+
+ul {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+    list-style-image: url("chevron.svg");
+}
+
+li {
+    padding-left: 0.5rem;
+    margin: 0.25rem 0;
+}
+
+a, a:hover, a:active, a:visited {
+    color: #790e1c;
     display: inline-block;
-    background-color: lightgreen;
 }
 
-.choice .error {
-    background-color: pink;
+.success,
+.error {
+    padding: 0.5rem 1rem;
+    margin-top: 1rem;
+    display: inline-block;
+    border: 1px solid #790e1c;
+    color: #790e1c;
 }
 
-.choice table {
+.success::after {
+    content: "";
+    background-image: url("done.svg");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    vertical-align: middle;
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: -0.15rem -0.25rem 0 0.4rem;
+}
+
+.error {
+    background-color: #ffcccc;
+}
+
+table {
     border-collapse: collapse;
 }
 
-.choice table td {
+table td {
     vertical-align: middle;
 }
 
-.choice table td:nth-child(2) {
-    padding: 0.25rem 1rem;
+table td:nth-child(2) {
+    padding: 0.35rem 1rem;
 }
 
-.choice button {
+table td:nth-child(3) {
+    padding: 0;
+}
+
+button,
+.chosen {
+    font-family: Montserrat, sans-serif;
     font-size: 0.9em;
+    letter-spacing: 0.7px;
+    border-radius: 50px;
+    border: none;
+    padding: 0.3rem 0.8rem;
+    background-color: #525252;
+    border: 1px #525252 solid;
+    color: white;
+    transition: opacity 200ms, background-color 200ms, border-color 200ms;
+}
+
+.chosen {
+    background-color: white;
+    border-color: #790e1c;
+    color: #790e1c;
+    user-select: none;
+}
+
+button {
     cursor: pointer;
 }
 
-.choice button[disabled] {
+button:disabled,
+button:disabled:hover {
+    opacity: 0.5;
+    background-color: #525252;
+    border-color: #525252;
     cursor: default;
+}
+
+button:hover,
+button:focus {
+    background-color: #1f1f1f;
+    border-color: #1f1f1f;
+}
+
+button.primary {
+    background-color: #790e1c;
+    border-color: #790e1c;
+}
+
+button.primary:hover,
+button.primary:focus {
+    background-color: #34060c;
+    border-color: #34060c;
 }
 
 .progress-text {
@@ -58,10 +136,10 @@ body {
     color: grey;
 }
 
-.choice button.loading + .progress-text::after {
-    content: 'načítání…';
+button.loading + .progress-text::after {
+    content: "načítání…";
 }
 
-.choice button.loaded + .progress-text::after {
-    content: 'načteno';
+button.loaded + .progress-text::after {
+    content: "načteno";
 }
