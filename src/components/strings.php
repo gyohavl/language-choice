@@ -38,7 +38,8 @@ function _t($group, $key) {
             'student' => 'Student byl uložen.',
             'language' => 'Jazyk byl uložen.',
             'data' => 'Data byla uložena.',
-            'done' => 'Hotovo.'
+            'done' => 'Hotovo.',
+            'logout' => 'Byli jste odhlášeni.'
         ),
         'time' => array(
             'heading' => 'Časy',

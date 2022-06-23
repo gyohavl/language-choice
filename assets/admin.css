@@ -2,15 +2,9 @@
     box-sizing: border-box;
 }
 
-:root {
-    --primary-color: #790e1c;
-}
-
 body {
-    font-family: Montserrat, sans-serif;
-    /* font-size: 18px; */
+    font-family: sans-serif;
     line-height: 1.5;
-    /* Montserrat je potřeba nastavit */
     margin: 1.5rem 2rem;
 }
 
