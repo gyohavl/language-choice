@@ -53,6 +53,18 @@ function confirm() {
                 setDataValue('mailer.password', '');
                 break;
 
+            case 'wipe-students':
+                sql("TRUNCATE TABLE `" . prefixTable('students') . "`;", false);
+                break;
+
+            case 'wipe-languages':
+                sql("TRUNCATE TABLE `" . prefixTable('languages') . "`;", false);
+                break;
+
+            case 'wipe-data':
+                sql("TRUNCATE TABLE `" . prefixTable('data') . "`;", false);
+                break;
+
             case 'wipe-clean':
                 sql("DROP TABLE `" . prefixTable('students') . "`;", false);
                 sql("DROP TABLE `" . prefixTable('languages') . "`;", false);

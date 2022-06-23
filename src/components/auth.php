@@ -27,7 +27,7 @@ function showLoginForm() {
     if (isset($_POST['adminpass'])) {
         if ($config['adminpass'] === $_POST['adminpass']) {
             $_SESSION['adminpass'] = password_hash($config['adminpass'], PASSWORD_DEFAULT);
-            redirectMessage('login');
+            redirectMessage('login', 'success', ($_SERVER['QUERY_STRING'] ? ('?' . $_SERVER['QUERY_STRING']) : ''));
         }
 
         $formDisplayData['error'] = 'Zadali jste špatné heslo.';

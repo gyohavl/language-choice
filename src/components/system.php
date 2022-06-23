@@ -202,10 +202,16 @@ function systemPage($view) {
         $html .= '<tr><td><label for="choice">' . _t('form', 'choice') . '</label></td><td>' . getLanguagesSelect('') . '</td></tr>';
         $html .= '<tr><td></td><td><input type="submit" value="Zobrazit náhled"></td></tr></table></form>';
         return adminTemplate($html);
-    } else if ($view == 'export' || $view == 'export-csv') {
+    } else if ($view == 'export' || $view == 'export-csv' || $view == 'export-csv-links') {
         $data = "spisc,e-mail,jmeno,trida,volba\r\n";
+
+        if ($view == 'export-csv-links') {
+            $data = "spisc,e-mail,jmeno,trida,odkaz,volba\r\n";
+        }
+
         $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
         $languagesArray = getLanguagesArray(true);
+        $linkPrefix = getLinkPrefix();
 
         foreach ($studentsTable as $row) {
             if ($row[6]) {
@@ -214,15 +220,19 @@ function systemPage($view) {
                 $language = '';
             }
 
-            $data .= "$row[1],$row[3],$row[4],$row[5],$language\r\n";
+            if ($view != 'export-csv-links') {
+                $data .= "$row[1],$row[3],$row[4],$row[5],$language\r\n";
+            } else {
+                $data .= "$row[1],$row[3],$row[4],$row[5],$linkPrefix$row[2],$language\r\n";
+            }
         }
 
-        if ($view == 'export-csv') {
+        if ($view == 'export-csv' || $view == 'export-csv-links') {
             header('Content-Type: text/csv; header=present; charset=utf-8');
             return $data;
         }
 
-        $html = '<h1>Exportovat data o studentech</h1><p><a href=".">zpět</a> | <a href="?system=export-csv" download="studenti.csv">stáhnout CSV soubor</a></p>';
+        $html = '<h1>Exportovat data o studentech</h1><p><a href=".">zpět</a> | <a href="?system=export-csv" download="studenti.csv">stáhnout CSV bez odkazů</a> | <a href="?system=export-csv-links" download="studenti.csv">stáhnout CSV s odkazy</a></p>';
         $html .= '<p>Formát: <code>spisové číslo,e-mail,celé jméno,třída (' . implode('/', getClasses()) . '),vybraný jazyk (značka)</code></p>';
         $html .= '<textarea class="export" readonly>' . $data . '</textarea>';
         return adminTemplate($html);
@@ -230,7 +240,10 @@ function systemPage($view) {
         $html = '<h1>Možnosti smazání dat</h1><p><a href=".">zpět</a></p><ul>'
             . '<li><a href="?confirm=wipe-next">' . _t('confirm', 'wipe-next') . '</a> (tato možnost se hodí pro každoroční čištění na konci celého procesu)</li>'
             // . '<li><a href="?confirm=wipe-mailer-password">' . _t('confirm', 'wipe-mailer-password') . '</a></li>'
-            . '<li><a href="?confirm=wipe-clean">' . _t('confirm', 'wipe-clean') . '</a></li>'
+            . '<li><a href="?confirm=wipe-students">' . _t('confirm', 'wipe-students') . '</a></li>'
+            . '<li><a href="?confirm=wipe-languages">' . _t('confirm', 'wipe-languages') . '</a></li>'
+            . '<li><a href="?confirm=wipe-data">' . _t('confirm', 'wipe-data') . '</a></li>'
+            . '<li><a href="?confirm=wipe-clean">' . _t('confirm', 'wipe-clean') . '</a> (tato možnost z databáze odstraní všechny tři tabulky této aplikace)</li>'
             . '</ul>';
         return adminTemplate($html);
     }
@@ -318,7 +331,7 @@ function getEmailDummyData($email = '', $sid = 123) {
 
 function getEmailBody($generalBody, $recipient, $forEmail = true, $isClient = false) {
     $levelsUp = $isClient ? 1 : 2;
-    $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], $levelsUp) . '?k=';
+    $linkPrefix = getLinkPrefix($levelsUp);
     $choice = !empty($recipient['choice']) ? $recipient['choice'] : null;
     $languageArray = getLanguagesArray(false, false);
     $chosenLanguage = ($choice && isset($languageArray[$choice])) ? $languageArray[$choice] : '';

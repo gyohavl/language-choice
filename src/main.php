@@ -129,3 +129,7 @@ function sanitizeInput($input) {
         return '';
     }
 }
+
+function getLinkPrefix($levelsUp = 2) {
+    return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], $levelsUp) . '?k=';
+}

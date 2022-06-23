@@ -20,7 +20,10 @@ function _t($group, $key) {
             'change-key' => 'změnit klíč studentovi',
             'wipe-next' => 'smazat data o studentech, časy a automaticky generovaná data',
             'wipe-mailer-password' => 'smazat uložené heslo k e-mailu',
-            'wipe-clean' => 'smazat všechna data v databázi'
+            'wipe-clean' => 'smazat všechna data v databázi',
+            'wipe-students' => 'smazat všechny studenty',
+            'wipe-languages' => 'smazat všechny jazyky',
+            'wipe-data' => 'smazat všechna „další data“'
         ),
         'success' => array(
             'login' => 'Výborně! Byli jste přihlášeni.',
@@ -33,6 +36,9 @@ function _t($group, $key) {
             'wipe-next' => 'Požadovaná data byla vymazána.',
             'wipe-mailer-password' => 'Heslo k e-mailu bylo smazáno z databáze.',
             'wipe-clean' => 'Všechna data byla smazána. Nyní pokračujte vytvořením tabulek v databázi.',
+            'wipe-students' => 'Všichni studenti byli smazáni.',
+            'wipe-languages' => 'Všechny jazyky byly smazány.',
+            'wipe-data' => '„Další data“ byla smazána.',
             'confirmation-test' => 'E-mail byl pravděpodobně odeslán, zkontrolujte svou e-mailovou schránku.',
             'import-students' => 'Studenti byli importováni.',
             'student' => 'Student byl uložen.',

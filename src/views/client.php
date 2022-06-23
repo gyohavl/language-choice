@@ -50,7 +50,8 @@ function getClientView() {
         if (!configExists()) {
             return '<p>Tato aplikace není správně nastavena.</p>';
         } else {
-            return '<p>Nefunguje připojení k databázi. Zkuste to prosím znovu později.</p>';
+            return '<p>Nefunguje připojení k databázi. Zkuste to prosím znovu později. <a href="?k='
+                . (isset($_GET['k']) ? $_GET['k'] : '') . '">Obnovit stránku…</a></p>';
         }
     }
 }

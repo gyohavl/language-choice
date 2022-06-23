@@ -25,7 +25,7 @@ function getStudentsTable() {
     <th>id</th><th>spis. č.</th><th>e-mail</th><th>jméno</th><th>třída</th><th>vybraný jazyk</th><th>upravit</th><th><abbr title="ke zkopírování a individuálnímu zaslání v případě potřeby">přihlašovací odkaz</abbr></th>
     </tr></thead><tbody>';
     $studentsTable = sql('SELECT * FROM `' . prefixTable('students') . '`;');
-    $linkPrefix = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF'], 2) . '?k=';
+    $linkPrefix = getLinkPrefix();
     $languagesArray = getLanguagesArray();
     $isFiltered = !empty($_GET['filter']) ? true : false;
     $allowFilter = false;
