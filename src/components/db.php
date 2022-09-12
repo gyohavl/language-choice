@@ -31,10 +31,8 @@ function prefixTable($name) {
 
 function getSqlLanguageSettings($justCharset = false) {
     $engine = 'InnoDB';
-    $charset = 'utf8';
-    // $charset = 'utf8mb4';
-    $collate = 'utf8_unicode_ci';
-    // $collate = 'utf8mb4_0900_ai_ci';
+    $charset = 'utf8mb4';
+    $collate = 'utf8mb4_czech_ci';
 
     if ($justCharset) {
         return $charset;

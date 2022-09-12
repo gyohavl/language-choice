@@ -198,7 +198,7 @@ function systemPage($view) {
             . '<option value="3">po ukončení</option>'
             . '</select>'
             . '</td></tr>';
-        $html .= '<tr><td><label for="class">' . _t('form', 'class') . '</label></td><td>' . getClassesSelect(9) . '</td></tr>';
+        $html .= '<tr><td><label for="class">' . _t('form', 'class') . '</label></td><td>' . getClassesSelect(5) . '</td></tr>';
         $html .= '<tr><td><label for="choice">' . _t('form', 'choice') . '</label></td><td>' . getLanguagesSelect('') . '</td></tr>';
         $html .= '<tr><td></td><td><input type="submit" value="Zobrazit náhled"></td></tr></table></form>';
         return adminTemplate($html);
@@ -312,7 +312,7 @@ function systemAction($action) {
             if ($result == 'success') {
                 redirectMessage('confirmation-test', 'success', '?system=confirmation-test');
             } else {
-                return adminTemplate('Chyba: některé údaje nebyly vyplněny. <a href="?system=confirmation-test">Zpět k odeslání testovacího potvrzovacího e-mailu</a>');
+                return adminTemplate('Chyba: některé údaje nebyly vyplněny nebo nastal technický problém při odesílání. <a href="?system=confirmation-test">Zpět k odeslání testovacího potvrzovacího e-mailu</a>');
             }
         }
     }

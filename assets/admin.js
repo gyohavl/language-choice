@@ -25,3 +25,18 @@ function updateTime(id) {
 function bodyInsert(el, id) {
     document.getElementById(id).value += el.textContent;
 }
+
+const textareas = [...document.getElementsByTagName('textarea')];
+textareas.forEach(el => {
+    el.ondragover = () => false;
+    el.ondragend = () => false;
+    el.ondrop = function (e) {
+        var file = e.dataTransfer.files[0];
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            el.value += event.target.result;
+        };
+        reader.readAsText(file);
+        return false;
+    };
+});

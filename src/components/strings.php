@@ -35,7 +35,7 @@ function _t($group, $key) {
             'change-key' => 'Klíč byl změněn.',
             'wipe-next' => 'Požadovaná data byla vymazána.',
             'wipe-mailer-password' => 'Heslo k e-mailu bylo smazáno z databáze.',
-            'wipe-clean' => 'Všechna data byla smazána. Nyní pokračujte vytvořením tabulek v databázi.',
+            'wipe-clean' => 'Všechna data byla smazána. Nyní můžete opět vytvořit prázdné tabulky v databázi.',
             'wipe-students' => 'Všichni studenti byli smazáni.',
             'wipe-languages' => 'Všechny jazyky byly smazány.',
             'wipe-data' => '„Další data“ byla smazána.',
@@ -67,7 +67,7 @@ function _t($group, $key) {
             'allow_change' => 'umožnit dodatečnou změnu vybraného jazyka?'
         ),
         'mailer' => array(
-            'heading' => 'Nastavení e-mailového serveru',
+            'heading' => 'Nastavení e-mailového serveru (SMTP)',
             'host' => 'adresa serveru (host)',
             'email' => 'e-mailová adresa',
             'password' => '<abbr title="je uloženo nezabezpečeně, lze ho zadat až při odesílání úvodního e-mailu – je však nezbytné pro potvrzovací e-maily">heslo k e-mailu</abbr>'
